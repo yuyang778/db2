@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    
+    <script src="page-protector.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关系代数交互沙盒</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <h1>关系代数交互沙盒</h1>
+        <p>拖拽字段构建查询，实时查看结果</p>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="tables-container">
+                <h2>数据表</h2>
+                <div class="tables">
+                    <div class="table" id="students-table">
+                        <h3>Students</h3>
+                        <div class="table-fields">
+                            <div class="field" draggable="true" data-table="Students" data-field="id">id</div>
+                            <div class="field" draggable="true" data-table="Students" data-field="name">name</div>
+                            <div class="field" draggable="true" data-table="Students" data-field="age">age</div>
+                            <div class="field" draggable="true" data-table="Students" data-field="major">major</div>
+                        </div>
+                    </div>
+                    <div class="table" id="courses-table">
+                        <h3>Courses</h3>
+                        <div class="table-fields">
+                            <div class="field" draggable="true" data-table="Courses" data-field="id">id</div>
+                            <div class="field" draggable="true" data-table="Courses" data-field="name">name</div>
+                            <div class="field" draggable="true" data-table="Courses" data-field="credit">credit</div>
+                            <div class="field" draggable="true" data-table="Courses" data-field="teacher">teacher</div>
+                        </div>
+                    </div>
+                    <div class="table" id="enrollment-table">
+                        <h3>Enrollment</h3>
+                        <div class="table-fields">
+                            <div class="field" draggable="true" data-table="Enrollment" data-field="student_id">student_id</div>
+                            <div class="field" draggable="true" data-table="Enrollment" data-field="course_id">course_id</div>
+                            <div class="field" draggable="true" data-table="Enrollment" data-field="grade">grade</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="operators-container">
+                <h2>运算符</h2>
+                <div class="operators">
+                    <div class="operator" draggable="true" data-operator="select">σ (选择)</div>
+                    <div class="operator" draggable="true" data-operator="project">π (投影)</div>
+                    <div class="operator" draggable="true" data-operator="join">⋈ (连接)</div>
+                    <div class="operator" draggable="true" data-operator="union">∪ (并集)</div>
+                    <div class="operator" draggable="true" data-operator="intersection">∩ (交集)</div>
+                    <div class="operator" draggable="true" data-operator="difference">- (差集)</div>
+                </div>
+            </div>
+
+            <div class="query-builder">
+                <h2>查询构建器</h2>
+                <div class="query-area" id="query-area">
+                    <div class="placeholder">拖拽运算符和字段到此区域构建查询</div>
+                </div>
+                <div class="buttons">
+                    <button id="execute-btn">执行查询</button>
+                    <button id="clear-btn">清除</button>
+                </div>
+            </div>
+
+            <div class="results-container">
+                <div class="sql-result">
+                    <h2>SQL 等价表示</h2>
+                    <div id="sql-display"></div>
+                </div>
+                <div class="tree-result">
+                    <h2>语法树</h2>
+                    <div id="tree-display"></div>
+                </div>
+                <div class="table-result">
+                    <h2>查询结果</h2>
+                    <div id="result-table"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>数据库原理与应用课程 - 关系代数交互式教学工具</p>
+    </footer>
+
+    <script src="js/data.js"></script>
+    <script src="js/drag-drop.js"></script>
+    <script src="js/query-builder.js"></script>
+    <script src="js/query-executor.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html> 

@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <script src="page-protector.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Server 数据库事务模拟器</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 8px 15px;
+            background-color: #0078d4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #005a9e;
+        }
+        select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        .database {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .table {
+            flex: 1;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .table-header {
+            background-color: #0078d4;
+            color: white;
+            padding: 10px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .table-body {
+            padding: 10px;
+        }
+        .table-row {
+            display: flex;
+            border-bottom: 1px solid #eee;
+            padding: 8px 0;
+        }
+        .table-row:last-child {
+            border-bottom: none;
+        }
+        .table-cell {
+            flex: 1;
+            padding: 0 10px;
+        }
+        .transaction-log {
+            height: 200px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 5px;
+            border-left: 3px solid #0078d4;
+        }
+        .transaction-panel {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .transaction {
+            flex: 1;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+        }
+        .transaction-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #ddd;
+        }
+        .problem-desc {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-left: 3px solid #0078d4;
+            margin-bottom: 15px;
+        }
+        .highlight {
+            background-color: #fffacd;
+        }
+        .error {
+            color: #d9534f;
+        }
+        .success {
+            color: #5cb85c;
+        }
+        /* 新增样式 */
+        .visual-state {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+        }
+        .tx-state {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .tx-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            padding-bottom: 5px;
+            border-bottom: 1px dashed #ddd;
+        }
+        .tx-data {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .tx-item {
+            display: flex;
+            justify-content: space-between;
+        }
+        .tx-status {
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.9em;
+            text-align: center;
+            width: fit-content;
+            margin-top: 5px;
+        }
+        .status-active {
+            background-color: #007bff;
+            color: white;
+        }
+        .status-committed {
+            background-color: #28a745;
+            color: white;
+        }
+        .status-rolledback {
+            background-color: #dc3545;
+            color: white;
+        }
+        .status-none {
+            background-color: #6c757d;
+            color: white;
+        }
+        .animation-area {
+            height: 180px;
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            position: relative;
+            overflow: hidden;
+            background-color: #f5f5f5;
+        }
+        .tx-block {
+            position: absolute;
+            width: 120px;
+            height: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #0078d4;
+            color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: all 0.5s ease;
+        }
+        .tx1-block {
+            top: 30px;
+            left: 50px;
+        }
+        .tx2-block {
+            top: 100px;
+            left: 50px;
+        }
+        .db-block {
+            position: absolute;
+            width: 150px;
+            height: 120px;
+            right: 50px;
+            top: 30px;
+            background-color: #f0f0f0;
+            border: 2px solid #0078d4;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .animation-arrow {
+            position: absolute;
+            height: 2px;
+            background-color: #0078d4;
+            transform-origin: left center;
+            display: none;
+        }
+        .animation-arrow::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            border-left: 8px solid #0078d4;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .step-indicator {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 0.9em;
+        }
+        .step-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background-color: #ddd;
+            border-radius: 50%;
+            margin: 0 5px;
+        }
+        .step-dot.active {
+            background-color: #0078d4;
+        }
+        .hint-box {
+            margin-top: 10px;
+            padding: 8px;
+            background-color: #e8f4fc;
+            border-left: 3px solid #0078d4;
+            font-size: 0.9em;
+        }
+        .tooltip {
+            position: absolute;
+            padding: 8px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            border-radius: 3px;
+            font-size: 0.8em;
+            max-width: 200px;
+            z-index: 100;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SQL Server 数据库事务模拟器</h1>
+        
+        <div class="section">
+            <h2>事务隔离级别</h2>
+            <div class="controls">
+                <select id="isolation-level">
+                    <option value="read-uncommitted">读未提交 (Read Uncommitted)</option>
+                    <option value="read-committed" selected>读已提交 (Read Committed)</option>
+                    <option value="repeatable-read">可重复读 (Repeatable Read)</option>
+                    <option value="serializable">串行化 (Serializable)</option>
+                </select>
+                <button id="apply-isolation">应用隔离级别</button>
+            </div>
+            <div class="problem-desc">
+                <p><strong>隔离级别说明：</strong></p>
+                <ul>
+                    <li><strong>读未提交</strong>：最低的隔离级别，允许脏读。一个事务可以读取另一个未提交事务的数据。</li>
+                    <li><strong>读已提交</strong>：防止脏读，但允许不可重复读和幻读。只能读取已经提交的数据。</li>
+                    <li><strong>可重复读</strong>：防止脏读和不可重复读，但允许幻读。确保在事务期间读取的数据不会改变。</li>
+                    <li><strong>串行化</strong>：最高的隔离级别，防止脏读、不可重复读和幻读。事务完全隔离执行。</li>
+                </ul>
+            </div>
+            <!-- 新增：隔离级别可视化 -->
+            <div class="hint-box">
+                <p><strong>当前隔离级别下的问题防护：</strong> <span id="isolation-protection"></span></p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>数据库表</h2>
+            <div class="database">
+                <div class="table">
+                    <div class="table-header">账户表 (Accounts)</div>
+                    <div class="table-body" id="accounts-table">
+                        <div class="table-row">
+                            <div class="table-cell"><strong>账号ID</strong></div>
+                            <div class="table-cell"><strong>用户名</strong></div>
+                            <div class="table-cell"><strong>余额</strong></div>
+                        </div>
+                        <!-- 数据行将通过JavaScript动态添加 -->
+                    </div>
+                </div>
+                <div class="table">
+                    <div class="table-header">交易记录表 (Transactions)</div>
+                    <div class="table-body" id="transactions-table">
+                        <div class="table-row">
+                            <div class="table-cell"><strong>交易ID</strong></div>
+                            <div class="table-cell"><strong>账号ID</strong></div>
+                            <div class="table-cell"><strong>金额</strong></div>
+                            <div class="table-cell"><strong>类型</strong></div>
+                            <div class="table-cell"><strong>状态</strong></div>
+                        </div>
+                        <!-- 数据行将通过JavaScript动态添加 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>事务模拟 （事务1和事务2 中的更新账户均为向账户1中存入100元）</h2>
+            <div class="transaction-panel">
+                <div class="transaction" id="transaction1">
+                    <div class="transaction-title">事务 1</div>
+                    <div class="controls">
+                        <button class="start-tx" data-tx="1">开始事务</button>
+                        <button class="read-account" data-tx="1" disabled>读取账户</button>
+                        <button class="update-account" data-tx="1" disabled>更新账户</button>
+                        <button class="commit-tx" data-tx="1" disabled>提交事务</button>
+                        <button class="rollback-tx" data-tx="1" disabled>回滚事务</button>
+                    </div>
+                    <div class="transaction-log" id="tx1-log"></div>
+                </div>
+                <div class="transaction" id="transaction2">
+                    <div class="transaction-title">事务 2</div>
+                    <div class="controls">
+                        <button class="start-tx" data-tx="2">开始事务</button>
+                        <button class="read-account" data-tx="2" disabled>读取账户</button>
+                        <button class="update-account" data-tx="2" disabled>更新账户</button>
+                        <button class="commit-tx" data-tx="2" disabled>提交事务</button>
+                        <button class="rollback-tx" data-tx="2" disabled>回滚事务</button>
+                    </div>
+                    <div class="transaction-log" id="tx2-log"></div>
+                </div>
+            </div>
+            
+            <!-- 新增：事务状态可视化区域 -->
+            <div class="visual-state">
+                <div class="tx-state" id="tx1-state">
+                    <div class="tx-title">事务1状态</div>
+                    <div class="tx-data">
+                        <div class="tx-item">
+                            <span>状态:</span>
+                            <span id="tx1-status-text">未开始</span>
+                        </div>
+                        <div class="tx-item">
+                            <span>读取数据:</span>
+                            <span id="tx1-read-data">无</span>
+                        </div>
+                        <div class="tx-item">
+                            <span>修改数据:</span>
+                            <span id="tx1-write-data">无</span>
+                        </div>
+                    </div>
+                    <div class="tx-status status-none" id="tx1-status-badge">未开始</div>
+                </div>
+                <div class="tx-state" id="tx2-state">
+                    <div class="tx-title">事务2状态</div>
+                    <div class="tx-data">
+                        <div class="tx-item">
+                            <span>状态:</span>
+                            <span id="tx2-status-text">未开始</span>
+                        </div>
+                        <div class="tx-item">
+                            <span>读取数据:</span>
+                            <span id="tx2-read-data">无</span>
+                        </div>
+                        <div class="tx-item">
+                            <span>修改数据:</span>
+                            <span id="tx2-write-data">无</span>
+                        </div>
+                    </div>
+                    <div class="tx-status status-none" id="tx2-status-badge">未开始</div>
+                </div>
+            </div>
+            
+            <!-- 新增：事务动画区域 -->
+            <div class="animation-area" id="animation-area">
+                <div class="tx-block tx1-block" id="tx1-block">事务1</div>
+                <div class="tx-block tx2-block" id="tx2-block">事务2</div>
+                <div class="db-block" id="db-block">
+                    <div>数据库</div>
+                    <div id="db-value">账户1: ¥1000</div>
+                </div>
+                <div class="animation-arrow" id="tx1-arrow"></div>
+                <div class="animation-arrow" id="tx2-arrow"></div>
+                <div class="step-indicator" id="step-indicator"></div>
+                <div class="tooltip" id="animation-tooltip"></div>
+            </div>
+            <div class="hint-box" id="operation-hint">
+                选择隔离级别，然后点击"开始事务"开始模拟。
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>并发问题演示</h2>
+            <div class="controls">
+                <button id="demo-dirty-read">脏读演示</button>
+                <button id="demo-non-repeatable-read">不可重复读演示</button>
+                <button id="demo-phantom-read">幻读演示</button>
+                <button id="demo-lost-update">丢失更新演示</button>
+                <button id="reset-demo">重置演示</button>
+            </div>
+            <div class="problem-desc">
+                <p><strong>并发问题说明：</strong></p>
+                <ul>
+                    <li><strong>脏读</strong>：当一个事务读取了另一个事务未提交的数据，如果该事务回滚，则读取的数据无效。</li>
+                    <li><strong>不可重复读</strong>：当一个事务多次读取同一数据，但在这期间另一个事务修改了数据并提交，导致第一个事务两次读取的结果不一致。</li>
+                    <li><strong>幻读</strong>：当一个事务第一次查询得到一些数据，但第二次同样的查询得到了不同的结果集（有新增或删除的行）。</li>
+                    <li><strong>丢失更新</strong>：当两个事务同时读取然后更新相同的数据，后提交的事务会覆盖先提交事务的更新。</li>
+                </ul>
+            </div>
+            <div class="transaction-log" id="demo-log"></div>
+            
+            <!-- 新增：当前演示问题说明 -->
+            <div class="hint-box" id="demo-explanation" style="display:none;">
+                <p><strong>当前演示:</strong> <span id="demo-type"></span></p>
+                <p><strong>问题描述:</strong> <span id="demo-description"></span></p>
+                <p><strong>解决方案:</strong> <span id="demo-solution"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 

@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学生成绩管理系统</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+      }
+      
+      html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+      }
+      
+      body {
+        background-color: #f5f7fa;
+        color: #333;
+        line-height: 1.6;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+      
+      .header {
+        background-color: #2c5697;
+        color: #ffffff;
+        padding: 40px 20px;
+        text-align: center;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        width: 100%;
+      }
+      
+      .header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+        font-weight: bold;
+      }
+      
+      .header p {
+        font-size: 1.2rem;
+        opacity: 0.8;
+      }
+      
+      .container {
+        max-width: 1200px;
+        width: 95%;
+        margin: 30px auto;
+        padding: 20px;
+        flex: 1;
+      }
+      
+      .sql-container {
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        padding: 25px;
+        margin-bottom: 30px;
+        width: 100%;
+      }
+      
+      .section-title {
+        color: #2c5697;
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e1e8f0;
+      }
+      
+      textarea {
+        width: 100%;
+        height: 600px;
+        padding: 15px;
+        border: 1px solid #d0d9e5;
+        border-radius: 6px;
+        background-color: #f8f9fa;
+        font-family: Consolas, Monaco, 'Courier New', monospace;
+        font-size: 14px;
+        line-height: 1.5;
+        white-space: pre;
+        overflow: auto;
+        resize: vertical;
+        max-width: 100%;
+      }
+      
+      .btn-group {
+        margin-top: 25px;
+        text-align: center;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+      }
+      
+      .btn {
+        display: inline-block;
+        padding: 12px 24px;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      
+      .btn-primary {
+        background-color: #2c5697;
+      }
+      
+      .btn-primary:hover {
+        background-color: #1e3c6a;
+      }
+      
+      .btn-success {
+        background-color: #3498db;
+      }
+      
+      .btn-success:hover {
+        background-color: #2980b9;
+      }
+      
+      .footer {
+        background-color: #2c5697;
+        color: white;
+        text-align: center;
+        padding: 15px;
+        width: 100%;
+        margin-top: auto;
+        font-size: 14px;
+      }
+      
+      @media (max-width: 768px) {
+        .header h1 {
+          font-size: 1.8rem;
+        }
+        
+        .container {
+          width: 100%;
+          padding: 15px 10px;
+        }
+        
+        .sql-container {
+          padding: 15px 10px;
+        }
+        
+        .btn {
+          width: 100%;
+          margin: 5px 0;
+        }
+        
+        textarea {
+          height: 450px;
+        }
+      }
+      
+      @media (max-width: 480px) {
+        .header {
+          padding: 20px 10px;
+        }
+        
+        .header h1 {
+          font-size: 1.5rem;
+        }
+        
+        .section-title {
+          font-size: 1.4rem;
+        }
+        
+        textarea {
+          height: 350px;
+          font-size: 13px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>学生成绩管理系统</h1>
+      <p>成都东软学院 数据库示例</p>
+    </div>
+    
+    <div class="container">
+      <div class="sql-container">
+        <h2 class="section-title">SQL 代码示例</h2>
+        <p style="margin-bottom: 15px; color: #666;">本代码基于SQL LITE环境运行，包含完整的学生成绩管理系统数据库结构和示例数据</p>
+        
+        <textarea readonly>---------------示例数据库表：学生成绩管理系统-----------------
+--本代码基于SQL LITE环境运行
+--成都东软学院  余阳
+
+-- 表 Department的结构
+DROP TABLE IF EXISTS Department;
+CREATE TABLE Department(
+    DepartmentID CHAR(4) PRIMARY KEY,
+    DepartmentName VARCHAR(20) NOT NULL UNIQUE,
+    DepartmentHeader VARCHAR(8) NOT NULL,
+    TeacherNum INT
+);
+
+-- 表 Class 的结构
+DROP TABLE IF EXISTS Class;
+CREATE TABLE Class(
+  ClassID CHAR(8) PRIMARY KEY,
+  ClassName VARCHAR(20) NOT NULL,
+  Monitor CHAR(8),
+  StudentNum INT CHECK(StudentNum>0),
+  DepartmentID CHAR(4) REFERENCES Department(DepartmentID)
+);
+
+-- 表 Student 的结构
+DROP TABLE IF EXISTS Student;
+CREATE TABLE Student(
+  StudentID CHAR(12) PRIMARY KEY,
+  StudentName CHAR(8) NOT NULL,
+  Sex CHAR(2) NOT NULL CHECK(Sex IN ('男','女')),
+  Birth DATETIME NOT NULL,
+  HomeAddr VARCHAR(80),
+  EntranceTime DATETIME DEFAULT CURRENT_TIMESTAMP,
+  ClassID CHAR(8) REFERENCES Class(ClassID)
+);
+
+-- 表 Course 的结构
+DROP TABLE IF EXISTS Course;
+CREATE TABLE Course(
+  CourseID CHAR(8) PRIMARY KEY,
+  CourseName VARCHAR(60) NOT NULL,
+  BookNmae VARCHAR(80) NOT NULL,  -- 注意字段名拼写错误 (应为 BookName)
+  Period INT NOT NULL,
+  Credit INT NOT NULL
+);
+
+-- 表 Grade 的结构
+DROP TABLE IF EXISTS Grade;
+CREATE TABLE Grade(
+  CourseID CHAR(8) REFERENCES Course(CourseID),
+  StudentID CHAR(12) REFERENCES Student(StudentID),
+  Semester INT NOT NULL,
+  SchoolYear INT,
+  Grade NUMERIC(5,1) CHECK(Grade>=0),
+  PRIMARY KEY(CourseID, StudentID)
+);
+
+-- 表 Teacher 的结构
+DROP TABLE IF EXISTS Teacher;
+CREATE TABLE Teacher(
+  TeacherID CHAR(8) PRIMARY KEY,
+  Teachername CHAR(12) NOT NULL,
+  Sex CHAR(2) NOT NULL CHECK(Sex IN ('男','女')),
+  Brith DATETIME,  -- 注意字段名拼写错误 (应为 Birth)
+  Profession CHAR(8) CHECK(Profession IN ('教授','副教授','讲师','助教')),
+  Telephone VARCHAR(20),
+  HomeAddr VARCHAR(50),
+  DepartmentID CHAR(4) REFERENCES Department(DepartmentID)
+);
+
+-- 表 Schedule 的结构
+DROP TABLE IF EXISTS Schedule;
+CREATE TABLE Schedule(
+  TeacherID CHAR(8) REFERENCES Teacher(TeacherID),
+  CourseID CHAR(8) REFERENCES Course(CourseID),
+  ClassID CHAR(8) REFERENCES Class(ClassID),
+  Semester INT NOT NULL,
+  SchoolYear INT NOT NULL,
+  PRIMARY KEY(TeacherID, CourseID, ClassID)
+);
+
+-----------------------------------------
+-- 表 Department的数据 (3条)
+-----------------------------------------
+INSERT INTO Department(DepartmentID, DepartmentName, DepartmentHeader, TeacherNum) VALUES('Dp01', '计算机系', '罗浩然', 120);
+INSERT INTO Department(DepartmentID, DepartmentName, DepartmentHeader, TeacherNum) VALUES('Dp02', '信管系', '李伶俐', NULL);
+INSERT INTO Department(DepartmentID, DepartmentName, DepartmentHeader, TeacherNum) VALUES('Dp03', '英语系', '李宏伟', 10);
+
+-----------------------------------------
+-- 表 Class 的数据 (6条)
+-----------------------------------------
+INSERT INTO Class VALUES('Cs010901','09软件技术1班','方凯',34,'Dp01');
+INSERT INTO Class VALUES('Cs010902','09软件测试1班','林静',10,'Dp01');
+INSERT INTO Class VALUES('Cs010903','09数据库班','黄勇',28,'Dp01');
+INSERT INTO Class VALUES('Cs011104','11网络工程',NULL,23,'Dp01');
+INSERT INTO Class VALUES('Cs021001','10电子商务1班','李米',33,'Dp02');
+INSERT INTO Class VALUES('Cs021002','10电子商务2班',NULL,NULL,'Dp02');
+
+-----------------------------------------
+-- 表 Student 的数据 (22条)
+-----------------------------------------
+INSERT INTO Student VALUES('St0109010001','张宏','男','1998-04-04','广州市天河区常保阁东80号','2016-09-10','Cs010901');
+INSERT INTO Student VALUES('St0109010002','姜明凡','男','1997-12-07','汕头市天源路34号','2016-09-19','Cs010901');
+INSERT INTO Student VALUES('St0109010003','张丽','女','1997-09-30',NULL,'2016-09-19','Cs010901');
+INSERT INTO Student VALUES('St0109010004','赵新宇','男','1998-05-09','大连市沙河区承德西路80号','2016-09-10','Cs010901');
+INSERT INTO Student VALUES('St0109010005','李宇凯','男','1996-11-27','大连市沙河区花园东街90号','2016-09-10','Cs010901');
+INSERT INTO Student VALUES('St0109010006','黄丽莉','女','1997-08-15','佛山市南海区南海大道120号','2016-09-10','Cs010901');
+INSERT INTO Student VALUES('St0109010007','胡雨樱','女','1997-06-23','佛山市南海区狮山20号','2016-09-10','Cs010901');
+INSERT INTO Student VALUES('St0109010008','曹海华','男','1999-07-12','上海市黄石路50号','2016-09-10','Cs010901');
+INSERT INTO Student VALUES('St0109010009','许田','男','1998-02-21','深圳市福田区福华路29号京海大厦18c','2016-09-10','Cs010901');
+INSERT INTO Student VALUES('St0109020001','李平','男','1998-04-30','成都市都江堰红石路321号','2016-09-10','Cs010902');
+INSERT INTO Student VALUES('St0109020002','王虎','男','1997-10-19','宜宾市宜宾大道231号','2016-09-19','Cs010902');
+INSERT INTO Student VALUES('St0109020003','黄微','女','1997-07-18','鞍山市中山大道786号','2016-09-19','Cs010902');
+INSERT INTO Student VALUES('St0109020004','张凯芝','女','1996-05-19','广州市东山区34号','2016-09-19','Cs010902');
+INSERT INTO Student VALUES('St0111040001','立号','男','2000-11-04',NULL,'2017-09-13','Cs011104');
+INSERT INTO Student VALUES('St0111040002','姚钱','女','2000-04-02','成都市武侯区中山大道12号','2011-09-13','Cs011104');
+INSERT INTO Student VALUES('St0111040003','方雨丽','女','2000-10-04',NULL,'2017-09-13','Cs011104');
+INSERT INTO Student VALUES('St0210010001','李平','女','1999-12-03','广州市萝岗区32号','2017-09-12','Cs021001');
+INSERT INTO Student VALUES('St0210010002','周雅云','女','1998-04-23','大连市沙河区花园东街91号','2017-09-12','Cs021001');
+INSERT INTO Student VALUES('St0210010003','王建伟','男','1997-10-10','成都市中山路321号','2017-09-12','Cs021001');
+INSERT INTO Student VALUES('St0210010004','梁冬云','男','1998-05-04','成都市中山路322号','2010-09-12','Cs021001');
+INSERT INTO Student VALUES('St0210010005','黄树军','男','2000-04-08','佛山市顺德区五一大道120号','2017-09-12','Cs021001');
+INSERT INTO Student VALUES('St0210010006','雷立','男','1999-09-02',NULL,'2017-09-12','Cs021001');
+
+-----------------------------------------
+-- 表 Course 的数据 (7条)
+-----------------------------------------
+INSERT INTO Course VALUES('Dp010001','JAVA程序设计','Java高级程序设计',60,4);
+INSERT INTO Course VALUES('Dp010002','计算机网络','计算机网络',90,6);
+INSERT INTO Course VALUES('Dp010003','数据库原理与应用','数据库技术与应用-SQL Server 2005',60,4);
+INSERT INTO Course VALUES('Dp010004','计算机应用基础','计算机应用基础',30,2);
+INSERT INTO Course VALUES('Dp020001','国际贸易实务','国际贸易实务',60,4);
+INSERT INTO Course VALUES('Dp020002','电子商务物流管理','物流学概论',60,4);
+INSERT INTO Course VALUES('Dp030001','大学英语(一)','大学英语综合一',90,6);
+
+-----------------------------------------
+-- 表 Grade 的数据 (72条)
+-----------------------------------------
+INSERT INTO Grade VALUES('Dp010001','St0109010001',2,2009,87);
+INSERT INTO Grade VALUES('Dp010001','St0109010002',2,2009,68);
+INSERT INTO Grade VALUES('Dp010001','St0109010003',2,2009,92);
+INSERT INTO Grade VALUES('Dp010001','St0109010004',2,2009,91);
+INSERT INTO Grade VALUES('Dp010001','St0109010005',2,2009,72);
+INSERT INTO Grade VALUES('Dp010001','St0109010006',2,2009,87);
+INSERT INTO Grade VALUES('Dp010001','St0109010007',2,2009,97);
+INSERT INTO Grade VALUES('Dp010001','St0109010009',2,2009,69);
+INSERT INTO Grade VALUES('Dp010001','St0109020001',2,2009,56);
+INSERT INTO Grade VALUES('Dp010001','St0109020002',2,2009,89);
+INSERT INTO Grade VALUES('Dp010001','St0109020003',2,2009,98);
+INSERT INTO Grade VALUES('Dp010001','St0109020004',2,2009,76);
+INSERT INTO Grade VALUES('Dp010001','St0210010001',2,2010,88);
+INSERT INTO Grade VALUES('Dp010001','St0210010002',2,2010,72);
+INSERT INTO Grade VALUES('Dp010001','St0210010003',2,2010,71);
+INSERT INTO Grade VALUES('Dp010002','St0111040001',2,2011,54);
+INSERT INTO Grade VALUES('Dp010002','St0111040002',2,2011,92);
+INSERT INTO Grade VALUES('Dp010002','St0111040003',2,2011,95);
+INSERT INTO Grade VALUES('Dp010003','St0109010001',2,2009,50);
+INSERT INTO Grade VALUES('Dp010003','St0109010002',2,2009,67);
+INSERT INTO Grade VALUES('Dp010003','St0109010003',2,2009,61);
+INSERT INTO Grade VALUES('Dp010003','St0109010004',2,2009,91);
+INSERT INTO Grade VALUES('Dp010003','St0109010005',2,2009,55);
+INSERT INTO Grade VALUES('Dp010003','St0109010006',2,2009,68);
+INSERT INTO Grade VALUES('Dp010003','St0109010007',2,2009,69);
+INSERT INTO Grade VALUES('Dp010003','St0109010009',2,2009,55);
+INSERT INTO Grade VALUES('Dp010003','St0109020001',2,2009,93);
+INSERT INTO Grade VALUES('Dp010003','St0109020002',2,2009,70);
+INSERT INTO Grade VALUES('Dp010003','St0109020003',2,2009,73);
+INSERT INTO Grade VALUES('Dp010003','St0109020004',2,2009,81);
+INSERT INTO Grade VALUES('Dp010004','St0109010001',2,2009,80);
+INSERT INTO Grade VALUES('Dp010004','St0109010002',2,2009,63);
+INSERT INTO Grade VALUES('Dp010004','St0109010004',2,2009,57);
+INSERT INTO Grade VALUES('Dp010004','St0109010005',2,2009,94);
+INSERT INTO Grade VALUES('Dp010004','St0109010006',2,2009,89);
+INSERT INTO Grade VALUES('Dp010004','St0109010007',2,2009,83);
+INSERT INTO Grade VALUES('Dp010004','St0109010009',2,2009,82);
+INSERT INTO Grade VALUES('Dp010004','St0109020001',2,2009,72);
+INSERT INTO Grade VALUES('Dp010004','St0109020002',2,2009,57);
+INSERT INTO Grade VALUES('Dp010004','St0109020003',2,2009,53);
+INSERT INTO Grade VALUES('Dp010004','St0109020004',2,2009,51);
+INSERT INTO Grade VALUES('Dp010004','St0111040001',1,2012,55);
+INSERT INTO Grade VALUES('Dp010004','St0111040002',1,2012,63);
+INSERT INTO Grade VALUES('Dp010004','St0111040003',1,2012,61);
+INSERT INTO Grade VALUES('Dp010004','St0210010001',1,2011,99);
+INSERT INTO Grade VALUES('Dp010004','St0210010002',1,2011,71);
+INSERT INTO Grade VALUES('Dp010004','St0210010003',1,2011,56);
+INSERT INTO Grade VALUES('Dp020001','St0210010002',2,2010,64);
+INSERT INTO Grade VALUES('Dp020001','St0210010003',2,2010,82);
+INSERT INTO Grade VALUES('Dp020001','St0210010004',2,2010,95);
+INSERT INTO Grade VALUES('Dp020001','St0210010005',2,2010,86);
+INSERT INTO Grade VALUES('Dp030001','St0109010001',2,2009,75);
+INSERT INTO Grade VALUES('Dp030001','St0109010002',2,2009,53);
+INSERT INTO Grade VALUES('Dp030001','St0109010003',2,2009,64);
+INSERT INTO Grade VALUES('Dp030001','St0109010004',2,2009,84);
+INSERT INTO Grade VALUES('Dp030001','St0109010005',2,2009,72);
+INSERT INTO Grade VALUES('Dp030001','St0109010006',2,2009,93);
+INSERT INTO Grade VALUES('Dp030001','St0109010007',2,2009,98);
+INSERT INTO Grade VALUES('Dp030001','St0109010009',2,2009,64);
+INSERT INTO Grade VALUES('Dp030001','St0109020001',2,2009,77);
+INSERT INTO Grade VALUES('Dp030001','St0109020002',2,2009,61);
+INSERT INTO Grade VALUES('Dp030001','St0109020003',2,2009,63);
+INSERT INTO Grade VALUES('Dp030001','St0109020004',2,2009,51);
+INSERT INTO Grade VALUES('Dp030001','St0111040001',2,2011,96);
+INSERT INTO Grade VALUES('Dp030001','St0111040002',2,2011,63);
+INSERT INTO Grade VALUES('Dp030001','St0111040003',2,2011,71);
+INSERT INTO Grade VALUES('Dp030001','St0210010001',2,2010,77);
+INSERT INTO Grade VALUES('Dp030001','St0210010002',2,2010,67);
+INSERT INTO Grade VALUES('Dp030001','St0210010003',2,2010,91);
+INSERT INTO Grade VALUES('Dp030001','St0210010004',2,2010,68);
+INSERT INTO Grade VALUES('Dp030001','St0210010005',2,2010,73);
+
+-----------------------------------------
+-- 表 Teacher 的数据 (11条)
+-----------------------------------------
+INSERT INTO Teacher VALUES('dep01001','王一平','男','1968-04-05','副教授','86684567','东软宿舍29栋309','Dp01');
+INSERT INTO Teacher VALUES('dep01002','潘清菊','女','1976-09-03','讲师','86685633','东软宿舍21栋109','Dp01');
+INSERT INTO Teacher VALUES('dep01003','陈鹤','男','1959-12-05','教授','86687656','东软宿舍12栋306','Dp01');
+INSERT INTO Teacher VALUES('dep01004','周江瑞','男','1984-06-05','助教','86684332','东软宿舍3栋306','Dp01');
+INSERT INTO Teacher VALUES('dep01005','朱于龙','男','1978-05-06','讲师','86687653','东软宿舍1栋206','Dp01');
+INSERT INTO Teacher VALUES('dep02001','雷燕','女','1973-03-02','副教授','86687651','东软宿舍1栋106','Dp02');
+INSERT INTO Teacher VALUES('dep02002','郭菊','女','1985-06-07','助教','86680975','东软宿舍1栋406','Dp02');
+INSERT INTO Teacher VALUES('dep02003','刘悠然','男','1969-12-09','教授','86685645','东软宿舍1栋306','Dp02');
+INSERT INTO Teacher VALUES('dep03001','胡丽','女','1968-06-07','副教授','86687904','东软宿舍21栋108','Dp03');
+INSERT INTO Teacher VALUES('dep03002','刘芳','女','1976-08-06','讲师','86684312','东软宿舍21栋208','Dp03');
+INSERT INTO Teacher VALUES('dep03003','雷珍锦','女','1978-05-06','讲师','86687954','东软宿舍3栋206','Dp03');
+
+-----------------------------------------
+-- 表 Schedule 的数据 (14条)
+-----------------------------------------
+INSERT INTO Schedule VALUES('dep01001','Dp010003','Cs010902',2,2009);
+INSERT INTO Schedule VALUES('dep01001','Dp010003','Cs010903',2,2009);
+INSERT INTO Schedule VALUES('dep01001','Dp010004','Cs010901',2,2009);
+INSERT INTO Schedule VALUES('dep01001','Dp010004','Cs010902',2,2009);
+INSERT INTO Schedule VALUES('dep01002','Dp010002','Cs011104',2,2011);
+INSERT INTO Schedule VALUES('dep01003','Dp010004','Cs011104',1,2012);
+INSERT INTO Schedule VALUES('dep01003','Dp010004','Cs021001',1,2011);
+INSERT INTO Schedule VALUES('dep01005','Dp010001','Cs010901',2,2009);
+INSERT INTO Schedule VALUES('dep01005','Dp010001','Cs010902',2,2009);
+INSERT INTO Schedule VALUES('dep01005','Dp010001','Cs021001',2,2010);
+INSERT INTO Schedule VALUES('dep02001','Dp020001','Cs021001',2,2010);
+INSERT INTO Schedule VALUES('dep03001','Dp030001','Cs010901',2,2009);
+INSERT INTO Schedule VALUES('dep03001','Dp030001','Cs010902',2,2009);
+INSERT INTO Schedule VALUES('dep03001','Dp030001','Cs011104',2,2011);
+INSERT INTO Schedule VALUES('dep03003','Dp030001','Cs021001',2,2010);</textarea>
+        
+        <div class="btn-group">
+          <button id="copy-btn" class="btn btn-primary">复制代码</button>
+          <button id="download-btn" class="btn btn-success">下载SQL文件</button>
+        </div>
+      </div>
+      
+      <div class="sql-container">
+        <h2 class="section-title">数据库结构说明</h2>
+        <div style="padding: 10px; line-height: 1.8;">
+          <p>本数据库共包含以下表：</p>
+          <ul style="margin-left: 20px; margin-top: 10px;">
+            <li><strong>Department</strong> - 系部信息表</li>
+            <li><strong>Class</strong> - 班级信息表</li>
+            <li><strong>Student</strong> - 学生基本信息表</li>
+            <li><strong>Course</strong> - 课程信息表</li>
+            <li><strong>Grade</strong> - 学生成绩表</li>
+            <li><strong>Teacher</strong> - 教师信息表</li>
+            <li><strong>Schedule</strong> - 授课安排表</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <p>&copy; 2023 成都东软学院 数据库课程组 | 学生成绩管理系统示例</p>
+    </div>
+
+    <script>
+      // 复制按钮功能
+      document.getElementById('copy-btn').addEventListener('click', function() {
+        var textarea = document.querySelector('textarea');
+        textarea.select();
+        document.execCommand('copy');
+        alert('SQL代码已复制到剪贴板！');
+      });
+      
+      // 下载按钮功能
+      document.getElementById('download-btn').addEventListener('click', function() {
+        var content = document.querySelector('textarea').value;
+        var blob = new Blob([content], {type: 'text/plain'});
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = '学生成绩管理系统.sql';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+    </script>
+  </body>
+</html>

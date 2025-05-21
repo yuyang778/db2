@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据库原理与应用 - 教学资源导航</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            background-color: #f5f7fa;
+            color: #2c3e50;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid #eee;
+            background: linear-gradient(135deg, #0e64ba 0%, #075cb0 100%);
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #ffffff;
+            margin-bottom: 1rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            color: #ffffff;
+            font-size: 1.2rem;
+        }
+
+        .category-section {
+            margin-bottom: 4rem;
+            background-color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .category-title {
+            font-size: 2rem;
+            color: #1a237e;
+            margin-bottom: 2rem;
+            padding-bottom: 0.7rem;
+            border-bottom: 2px solid #3f51b5;
+            display: inline-block;
+        }
+
+        .module-section {
+            margin-bottom: 3rem;
+        }
+
+        .module-title {
+            font-size: 1.8rem;
+            color: #34495e;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+
+        .module-title:before {
+            content: "";
+            display: inline-block;
+            width: 8px;
+            height: 25px;
+            background-color: #3498db;
+            margin-right: 10px;
+            border-radius: 4px;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid #eee;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .card p {
+            color: #7f8c8d;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .card a {
+            display: inline-block;
+            text-decoration: none;
+            color: #3498db;
+            font-weight: bold;
+            transition: color 0.3s ease;
+            padding: 0.5rem 0;
+        }
+
+        .card a:hover {
+            color: #2980b9;
+        }
+
+        /* 突出显示SQL智能助手卡片 */
+        .card.highlight {
+            background: white;
+            transform: scale(1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #eee;
+            position: relative;
+        }
+
+        .card.highlight:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .card.highlight h3 {
+            color: #2c3e50;
+            font-size: 1.3rem;
+        }
+
+        .card.highlight::before {
+            content: "推荐工具";
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #ff5722;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .card.highlight a {
+            color: #3498db;
+            padding: 0.5rem 0;
+            display: inline-block;
+            font-weight: bold;
+        }
+
+        .card.highlight a:hover {
+            color: #2980b9;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid #eee;
+            color: #7f8c8d;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            padding: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <!-- 引入页面保护脚本 -->
+    <script src="page-protector.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>人工智能赋能数据库教学资源导航</h1>
+            <p class="subtitle">省级一流课程《数据库原理与应用》智能教学助手</p>
+            <p class="subtitle">成都东软学院：余阳</p>
+        </header>
+
+        <main>
+            <!-- AI驱动的实践工具 -->
+            <section class="category-section">
+                <h2 class="category-title">AI驱动的实践工具</h2>
+                <section class="module-section">
+                    <h2 class="module-title">实践工具</h2>
+                    <div class="card-grid">
+                        <div class="card highlight">
+                            <h3>SQL智能实验室​</h3>
+                            <p>由AI导师实时指导的交互式SQL训练场，学习路径推荐。</p>
+                            <a href="sql助手/index.html" target="_blank">🚀 [开启智能实验]</a>
+                        </div>
+                        
+                        
+                        <div class="card highlight">
+                            <h3> ​​数据库AI助手</h3>
+                            <p>基于大语言模型的智能辅导系统，自然语言转SQL、自动生成个性化练习题。</p>
+                            <a href="sql助手/sqlAI.html" target="_blank">🔍 [立即咨询AI导师]</a>
+                        </div>
+                        <div class="card">
+                            <h3>智能商品管理系统​</h3>
+                            <p>智能场景生成、AI自动生成业务场景、操作行为分析。</p>
+                            <a href="商品管理系统数据操作案例/index.html" target="_blank">👨‍💻 [体验智能案例]</a>
+                        </div>
+                    </div>
+                </section>
+                <section class="card">
+                    <h2 class="module-title">数据库设计工具</h2>
+                    <div class="card-grid">
+                        
+                        <div class="card">
+                            <h3>​​三范式AI转换器​</h3>
+                            <p>创建ER模型，智能建议规范化方案，可视化展示范式转换过程。</p>
+                            <a href="数据库设计及三范式工具/index.html" target="_blank">🔄 [开始智能设计]</a>
+                        </div>
+                        <div class="card">
+                            <h3> ​​AI表结构设计助手​</h3>
+                            <p>使用智能可视化工具设计数据库表结构并自动生成SQL代码。</p>
+                            <a href="数据库表结构设计工具/index.html" target="_blank">✏️ [启动智能设计]</a>
+                        </div>
+                        <div class="card">
+                            <h3>关系代数AI实验室​​</h3>
+                            <p>基于智能算法的交互式关系代数学习平台，可视化演绎运算过程。</p>
+                            <a href="关系代数交互沙盒工具/index.html" target="_blank">⚡ [开启智能模拟]</a>
+                        </div>
+                    </div>
+                </section>
+                <section class="module-section">
+                    <h2 class="module-title">数据库管理工具</h2>
+                    <div class="card-grid">
+                        <div class="card">
+                            <h3>智能数据库备份教练</h3>
+                            <p>基于AI的沉浸式备份恢复训练系统，打造企业级DBA实战能力。</p>
+                            <a href="数据库恢复与备份模拟器/index.html" target="_blank">🚀 [开始智能模拟训练]</a>
+                        </div>
+                        <div class="card">
+                            <h3> ​​智能权限管家​</h3>
+                            <p>基于AI的数据库权限可视化管理系统，实现精细化权限管控。</p>
+                            <a href="数据库安全与权限管理工具/index.html" target="_blank">🔐 [开始智能管理]</a>
+                        </div>
+                        <div class="card">
+                            <h3>事务ACID智能沙盒​</h3>
+                            <p>AI驱动的数据库事务特性模拟实验平台，深度解析ACID原理。</p>
+                            <a href="数据库事务模拟工具/index.html" target="_blank">🧪 [进入智能沙盒]</a>
+                        </div>
+                        
+                        
+                    </div>
+                </section>
+                <section class="module-section">
+                    <h2 class="module-title">数据库性能优化</h2>
+                    <div class="card-grid">
+                        
+                        <div class="card">
+                            <h3>​​SQL Server AI调试专家​</h3>
+                            <p>基于深度学习的智能错误诊断系统，7×24小时为您解决SQL Server各类报错问题。</p>
+                            <a href="SQL SERVER数据库错误与调试工具/index.html" target="_blank">🔍 [立即开启智能调试]</a>
+                        </div>
+                        <div class="card">
+                            <h3>性能优化AI教练​</h3>
+                            <p>自动基准测试、AI优化方案、效果可视化对比。</p>
+                            <a href="性能优化/index.html" target="_blank">🚀 [开始智能调优]</a>
+                        </div>
+                        <div class="card">
+                            <h3>SQL语法解剖台</h3>
+                            <p>AI生成的互动式语法训练，通过游戏机制掌握SQL，实时错误分析与修正建议。</p>
+                            <a href="SQL语法解剖台与找茬小游戏/index.html" target="_blank">🕹️ [开始游戏化学习]</a>
+                        </div>
+                    </div>
+                </section>
+
+               
+            </section>
+            <!-- 教程类资源 -->
+            <section class="category-section">
+                <h2 class="category-title">教程类资源</h2>
+                
+                <section class="module-section">
+                    <h2 class="module-title">基础概念学习</h2>
+                    <div class="card-grid">
+                        <div class="card">
+                            <h3>课程导引</h3>
+                            <p>数据库课程内容概览和学习路径指导。</p>
+                            <a href="课程导引教程/index.html" target="_blank">开始学习 →</a>
+                        </div>
+                        
+                        <div class="card">
+                            <h3>数据概论</h3>
+                            <p>了解数据库的基本概念和发展历史。</p>
+                            <a href="数据概论教程/index.html" target="_blank">开始学习 →</a>
+                        </div>
+                        <div class="card">
+                            <h3>数据库系统架构</h3>
+                            <p>通过交互式图示深入理解数据库系统的三级模式结构和基本架构。</p>
+                            <a href="数据库系统架构教程/index.html" target="_blank">开始学习 →</a>
+                        </div>
+                            
+                        
+                    </div>
+                </section>
+
+                <section class="module-section">
+                    <h2 class="module-title">SQL语言学习</h2>
+                    <div class="card-grid">
+                        <div class="card">
+                            <h3>关系数据库基础</h3>
+                            <p>学习关系数据库的基本理论和应用。</p>
+                            <a href="关系数据库学习教程/index.html" target="_blank">开始学习 →</a>
+                        </div>
+                        <div class="card">
+                            <h3>数据库表基础</h3>
+                            <p>掌握数据库表的创建、修改和管理知识。</p>
+                            <a href="数据库表学习教程/index.html" target="_blank">开始学习 →</a>
+                        </div>
+                        
+                        <div class="card">
+                            <h3>数据查询学习</h3>
+                            <p>掌握SELECT语句的使用方法和复杂查询技巧。</p>
+                            <a href="数据查询学习教程/index.html" target="_blank">开始学习 →</a>
+                        </div>
+                        <div class="card">
+                            <h3>数据操纵学习</h3>
+                            <p>学习数据的增删改操作及实际应用场景。</p>
+                            <a href="数据操纵学习教程/index.html" target="_blank">开始学习 →</a>
+                        </div>
+
+                        <div class="card">
+                            <h3>视图</h3>
+                            <p>学习数据库视图的概念、应用场景及优化技巧。</p>
+                            <a href="视图与索引学习教程/views.html" target="_blank">开始学习 →</a>
+                        </div>
+                        <div class="card">
+                            <h3>索引</h3>
+                            <p>学习数据库索引的概念、应用场景及优化技巧。</p>
+                            <a href="视图与索引学习教程/indexes.html" target="_blank">开始学习 →</a>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="module-section">
+                    <h2 class="module-title">数据库设计</h2>
+                    <div class="card-grid">
+                        
+                       
+                        <div class="card">
+                            <h3>数据库设计</h3>
+                            <p>学习数据库设计的基本原则和方法。</p>
+                            <a href="数据库设计教程/index.html" target="_blank">开始学习 →</a>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+          
+        </main>
+
+        <footer>
+            <p>© 2025 数据库原理与应用课程 | 教学资源导航        成都东软学院：余阳</p>
+        </footer>
+    </div>
+</body>
+</html>
