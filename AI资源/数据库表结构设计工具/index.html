@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <script src="page-protector.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据库表设计辅助工具</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>数据库表设计辅助工具</h1>
+        </header>
+        
+        <div class="tool-panel">
+            <div class="tables-container">
+                <div class="tables-header">
+                    <h2>数据库表</h2>
+                    <button id="add-table-btn" class="btn">添加新表</button>
+                </div>
+                <div id="tables-list"></div>
+            </div>
+            
+            <div class="table-editor">
+                <div id="current-table-editor">
+                    <h2>表设计</h2>
+                    <div class="table-name-container">
+                        <label for="table-name">表名：</label>
+                        <input type="text" id="table-name" placeholder="输入表名">
+                    </div>
+                    
+                    <div class="fields-container">
+                        <h3>字段定义</h3>
+                        <div class="fields-header">
+                            <span class="field-name">字段名</span>
+                            <span class="field-type">数据类型</span>
+                            <span class="field-length">长度/值</span>
+                            <span class="field-null">允许 NULL</span>
+                            <span class="field-default">默认值</span>
+                            <span class="field-pk">主键</span>
+                            <span class="field-fk">外键</span>
+                            <span class="field-actions">操作</span>
+                        </div>
+                        <div id="fields-list"></div>
+                        <button id="add-field-btn" class="btn">添加字段</button>
+                    </div>
+                    
+                    <div class="fk-container" id="fk-definitions">
+                        <h3>外键定义</h3>
+                        <div id="fk-list"></div>
+                    </div>
+                    
+                    <div class="actions">
+                        <button id="save-table-btn" class="btn btn-primary">保存表结构</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="sql-output">
+            <h2>SQL 脚本</h2>
+            <textarea id="sql-output" readonly></textarea>
+            <div class="sql-actions">
+                <button id="generate-sql-btn" class="btn btn-primary">生成 SQL</button>
+                <button id="download-sql-btn" class="btn">下载 SQL</button>
+                <button id="copy-sql-btn" class="btn">复制 SQL</button>
+            </div>
+            
+        </div>
+    </div>
+    
+    <!-- 外键关联模态框 -->
+    <div id="fk-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>设置外键关联</h2>
+            <div class="form-group">
+                <label for="fk-field">字段：</label>
+                <span id="fk-field-name"></span>
+            </div>
+            <div class="form-group">
+                <label for="ref-table">引用表：</label>
+                <select id="ref-table"></select>
+            </div>
+            <div class="form-group">
+                <label for="ref-field">引用字段：</label>
+                <select id="ref-field"></select>
+            </div>
+            <div class="form-group">
+                <label for="on-delete">ON DELETE：</label>
+                <select id="on-delete">
+                    <option value="NO ACTION">NO ACTION</option>
+                    <option value="CASCADE">CASCADE</option>
+                    <option value="SET NULL">SET NULL</option>
+                    <option value="SET DEFAULT">SET DEFAULT</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="on-update">ON UPDATE：</label>
+                <select id="on-update">
+                    <option value="NO ACTION">NO ACTION</option>
+                    <option value="CASCADE">CASCADE</option>
+                    <option value="SET NULL">SET NULL</option>
+                    <option value="SET DEFAULT">SET DEFAULT</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button id="save-fk-btn" class="btn btn-primary">保存</button>
+                <button id="cancel-fk-btn" class="btn">取消</button>
+            </div>
+        </div>
+       
+    </div>
+
+    <script src="script.js"></script>
+   
+</body>
+</html> 

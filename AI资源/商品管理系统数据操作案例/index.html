@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <script src="page-protector.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能商品管理系统​</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1, h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: white;;
+        }
+        
+        h1 {
+            font-size: 28px;
+            padding-bottom: 10px;
+           
+        }
+        
+        h2 {
+            font-size: 22px;
+            margin-top: 30px;
+        }
+        
+        .search-section, .add-section {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+        
+        form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: flex-end;
+        }
+        
+        .form-group {
+            flex: 1 1 200px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .results-section, .all-products-section, .sql-section {
+            margin-top: 30px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .action-btn {
+            margin-right: 5px;
+            padding: 5px 10px;
+            font-size: 14px;
+        }
+        
+        .edit-btn {
+            background-color: #f39c12;
+        }
+        
+        .delete-btn {
+            background-color: #e74c3c;
+        }
+        
+.container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px 0;
+            background: #2980b9;
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+ .footer {
+            text-align: center;
+            padding: 20px 0;
+            background: #2980b9;
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+
+        /* 商品展示卡片样式 */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+        
+        .product-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            background-color: white;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .product-image {
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .product-tag {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: #ff6b6b;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .product-info {
+            padding: 15px;
+        }
+        
+        .product-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            height: 40px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        
+        .product-category {
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .product-price {
+            color: #e74c3c;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .product-price .currency {
+            font-size: 14px;
+        }
+        
+        .product-stock {
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .product-actions {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .product-actions .action-btn {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .search-results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+        
+        .tag-free-shipping {
+            background-color: #2ecc71;
+        }
+        
+        .tag-hot {
+            background-color: #e74c3c;
+        }
+        
+        .tag-new {
+            background-color: #3498db;
+        }
+        
+        .sql-box {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            margin-top: 15px;
+            overflow-x: auto;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            width: 500px;
+            max-width: 90%;
+        }
+        
+        .close {
+            float: right;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            color: white;
+            display: none;
+            z-index: 2000;
+        }
+        
+        .success {
+            background-color: #2ecc71;
+        }
+        
+        .error {
+            background-color: #e74c3c;
+        }
+        
+        @media (max-width: 768px) {
+            .form-group {
+                flex: 1 1 100%;
+            }
+            
+            th, td {
+                padding: 8px 10px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+       
+          <div class="header">
+            <h1>智能商品管理系统​</h1>
+            <h2>智能场景生成、AI自动生成业务场景、操作行为分析。</h2>
+            
+        </div>
+ 
+    
+        <!-- 商品查询区域 -->
+        <section class="search-section">
+            <h2>商品查询</h2>
+            <form id="search-form">
+                <div class="form-group">
+                    <label for="search-id">商品ID</label>
+                    <input type="text" id="search-id" placeholder="输入商品ID">
+                </div>
+                <div class="form-group">
+                    <label for="search-name">商品名称</label>
+                    <input type="text" id="search-name" placeholder="输入商品名称">
+                </div>
+                <div class="form-group">
+                    <label for="search-category">商品类别</label>
+                    <select id="search-category">
+                        <option value="">全部类别</option>
+                        <option value="电子产品">电子产品</option>
+                        <option value="宠物用品">宠物用品</option>
+                        <option value="食品">食品</option>
+                        <option value="家居">家居</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="search-price-min">最低价格</label>
+                    <input type="number" id="search-price-min" placeholder="最低价格">
+                </div>
+                <div class="form-group">
+                    <label for="search-price-max">最高价格</label>
+                    <input type="number" id="search-price-max" placeholder="最高价格">
+                </div>
+                <button type="submit">查询</button>
+                <button type="reset">重置</button>
+            </form>
+        </section>
+       
+        <!-- 查询结果展示区域 -->
+        <section class="results-section">
+            <h2>查询结果</h2>
+            <div id="search-results">
+                <div class="search-results-grid" id="results-grid">
+                    <!-- 查询结果将动态插入这里 -->
+                </div>
+            </div>
+        </section>
+         <!-- SQL语句展示区域 -->
+        <section class="sql-section">
+            <h2>SQL语句</h2>
+            <div class="sql-box" id="sql-display">
+                <!-- SQL语句将动态插入这里 -->
+                -- SQL语句将在操作后显示在这里
+            </div>
+        </section>
+        <!-- 添加商品表单区域 -->
+        <section class="add-section">
+            <h2>添加商品</h2>
+            <form id="add-form">
+                <div class="form-group">
+                    <label for="add-id">商品ID</label>
+                    <input type="text" id="add-id" required placeholder="输入商品ID">
+                </div>
+                <div class="form-group">
+                    <label for="add-name">商品名称</label>
+                    <input type="text" id="add-name" required placeholder="输入商品名称">
+                </div>
+                <div class="form-group">
+                    <label for="add-category">商品类别</label>
+                    <select id="add-category" required>
+                        <option value="">选择类别</option>
+                        <option value="电子产品">电子产品</option>
+                        <option value="宠物用品">宠物用品</option>
+                        <option value="食品">食品</option>
+                        <option value="家居">家居</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="add-price">价格</label>
+                    <input type="number" id="add-price" required placeholder="输入价格">
+                </div>
+                <div class="form-group">
+                    <label for="add-stock">库存</label>
+                    <input type="number" id="add-stock" required placeholder="输入库存">
+                </div>
+                <div class="form-group">
+                    <label for="add-description">描述</label>
+                    <input type="text" id="add-description" placeholder="输入商品描述">
+                </div>
+                <div class="form-group">
+                    <label for="add-image">商品图片URL</label>
+                    <input type="text" id="add-image" placeholder="输入商品图片URL">
+                </div>
+                <div class="form-group">
+                    <label for="add-tag">商品标签</label>
+                    <select id="add-tag">
+                        <option value="">无标签</option>
+                        <option value="包邮">包邮</option>
+                        <option value="热卖">热卖</option>
+                        <option value="新品">新品</option>
+                    </select>
+                </div>
+                <button type="submit">添加商品</button>
+            </form>
+        </section>
+        
+        <!-- 所有商品展示区域 -->
+        <section class="all-products-section">
+            <h2>商品列表</h2>
+            <table id="products-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>商品图片</th>
+                        <th>商品名称</th>
+                        <th>类别</th>
+                        <th>价格</th>
+                        <th>库存</th>
+                        <th>标签</th>
+                        <th>描述</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="products-body">
+                    <!-- 所有商品将动态插入这里 -->
+                </tbody>
+            </table>
+        </section>
+        
+       
+    
+    <!-- 编辑商品的模态框 -->
+    <div class="modal" id="edit-modal">
+        <div class="modal-content">
+            <span class="close" id="close-modal">&times;</span>
+            <h2>编辑商品</h2>
+            <form id="edit-form">
+                <input type="hidden" id="edit-id">
+                <div class="form-group">
+                    <label for="edit-name">商品名称</label>
+                    <input type="text" id="edit-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-category">商品类别</label>
+                    <select id="edit-category" required>
+                        <option value="">选择类别</option>
+                        <option value="电子产品">电子产品</option>
+                        <option value="宠物用品">宠物用品</option>
+                        <option value="食品">食品</option>
+                        <option value="家居">家居</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="edit-price">价格</label>
+                    <input type="number" id="edit-price" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-stock">库存</label>
+                    <input type="number" id="edit-stock" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-description">描述</label>
+                    <input type="text" id="edit-description">
+                </div>
+                <div class="form-group">
+                    <label for="edit-image">商品图片URL</label>
+                    <input type="text" id="edit-image">
+                </div>
+                <div class="form-group">
+                    <label for="edit-tag">商品标签</label>
+                    <select id="edit-tag">
+                        <option value="">无标签</option>
+                        <option value="包邮">包邮</option>
+                        <option value="热卖">热卖</option>
+                        <option value="新品">新品</option>
+                    </select>
+                </div>
+                <button type="submit">保存修改</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- 通知提示 -->
+    <div class="notification" id="notification"></div>
+    
+    <script>
+        // 模拟数据库中的商品数据
+        let products = [
+            { id: "P001", name: "猫砂包邮10公斤20kg40斤除臭结团柠檬猫沙膨润土猫砂10斤猫爱宠日", category: "宠物用品", price: 6.9, stock: 500, description: "超值装40斤装膨润土猫砂", image: "https://img.alicdn.com/imgextra/i1/2206804326316/O1CN01K5zZIm1EOZxeuABhq_!!2206804326316.jpg", tag: "包邮" },
+            { id: "P002", name: "龙王豆浆粉80包原味甜味商用早餐黄豆豆奶粉冲泡饮品官方旗舰店批", category: "食品", price: 28.26, stock: 300, description: "原味甜味豆浆粉", image: "https://img.alicdn.com/imgextra/i3/2209070572772/O1CN01w3Z0tH1HjOyvYWGoa_!!2209070572772.jpg", tag: "包邮" },
+            { id: "P003", name: "桔子姑娘加厚原生木浆母婴适用家用餐巾纸面巾纸卫生面巾纸抽纸", category: "家居", price: 6.99, stock: 1000, description: "五层加厚 干湿两用", image: "https://img.alicdn.com/imgextra/i1/2214225908929/O1CN01EbNOtE1hEKvKKYHYg_!!2214225908929.jpg", tag: "" },
+            { id: "P004", name: "喔喔wow猫粮成猫粮十大品牌排行榜全价冻干无谷官方正品旗舰店", category: "宠物用品", price: 30, stock: 250, description: "鸡鸭鱼厚肉3拼 89%鲜肉蛋白", image: "https://img.alicdn.com/imgextra/i1/2200726820957/O1CN01ZmG0PG1ClwWIwWgF4_!!2200726820957.jpg", tag: "热卖" },
+            { id: "P005", name: "智能手机", category: "电子产品", price: 2999, stock: 50, description: "最新款智能手机，性能强劲", image: "https://img.alicdn.com/imgextra/i3/2084276252/O1CN01ajHJYu29zFrvhc46t_!!2084276252.jpg", tag: "新品" },
+            { id: "P006", name: "华为平板MatePad 11英寸2023款智能安卓平板电脑二合一学生学习", category: "电子产品", price: 1799, stock: 120, description: "120Hz高刷全面屏 骁龙芯片 6GB+128GB 星际蓝", image: "https://img.alicdn.com/imgextra/i2/2838892713/O1CN01sRQZD21PubWl3QaC9_!!2838892713.jpg", tag: "新品" },
+            { id: "P007", name: "简约小户型布艺沙发网红款科技布沙发客厅轻奢家具懒人三人沙发", category: "家居", price: 1299.9, stock: 80, description: "科技布面料 舒适透气 三人位 多色可选", image: "https://img.alicdn.com/imgextra/i1/3081650574/O1CN01MQEHwg1HRWkb9NiQN_!!3081650574.jpg", tag: "包邮" },
+            { id: "P008", name: "南极人男士短袖t恤夏季潮流宽松纯棉印花体恤衫大码半袖上衣服男", category: "家居", price: 49.9, stock: 600, description: "100%纯棉 多款可选 夏季透气", image: "https://img.alicdn.com/imgextra/i1/2086969160/O1CN013Cj8GW1qHTJPn8Jek_!!0-item_pic.jpg", tag: "热卖" }
+        ];
+        
+        // DOM元素
+        const searchForm = document.getElementById('search-form');
+        const resultsGrid = document.getElementById('results-grid');
+        const addForm = document.getElementById('add-form');
+        const productsTable = document.getElementById('products-table');
+        const sqlDisplay = document.getElementById('sql-display');
+        const editModal = document.getElementById('edit-modal');
+        const closeModal = document.getElementById('close-modal');
+        const editForm = document.getElementById('edit-form');
+        const notification = document.getElementById('notification');
+        
+        // 显示所有商品
+        function displayAllProducts() {
+            const productsBody = document.getElementById('products-body');
+            productsBody.innerHTML = '';
+            
+            products.forEach(product => {
+                const row = document.createElement('tr');
+                // 设置标签样式
+                let tagSpan = '';
+                if (product.tag) {
+                    let tagClass = '';
+                    if (product.tag === '包邮') {
+                        tagClass = 'tag-free-shipping';
+                    } else if (product.tag === '热卖') {
+                        tagClass = 'tag-hot';
+                    } else if (product.tag === '新品') {
+                        tagClass = 'tag-new';
+                    }
+                    tagSpan = `<span class="product-tag ${tagClass}" style="position: static; display: inline-block; margin: 0;">${product.tag}</span>`;
+                }
+                
+                // 默认图片
+                const imageUrl = product.image || 'https://via.placeholder.com/300x300?text=无图片';
+                
+                row.innerHTML = `
+                    <td>${product.id}</td>
+                    <td><img src="${imageUrl}" alt="${product.name}" style="width: 60px; height: 60px; object-fit: cover;"></td>
+                    <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${product.name}</td>
+                    <td>${product.category}</td>
+                    <td style="color: #e74c3c; font-weight: bold;">¥${product.price.toFixed(2)}</td>
+                    <td>${product.stock}</td>
+                    <td>${tagSpan || '-'}</td>
+                    <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${product.description || ''}</td>
+                    <td>
+                        <button class="action-btn edit-btn" data-id="${product.id}">修改</button>
+                        <button class="action-btn delete-btn" data-id="${product.id}">删除</button>
+                    </td>
+                `;
+                productsBody.appendChild(row);
+            });
+            
+            // 添加事件监听器到按钮
+            document.querySelectorAll('#products-body .edit-btn').forEach(btn => {
+                btn.addEventListener('click', editProduct);
+            });
+            
+            document.querySelectorAll('#products-body .delete-btn').forEach(btn => {
+                btn.addEventListener('click', deleteProduct);
+            });
+        }
+        
+        // 显示查询结果
+        function displaySearchResults(results) {
+            const resultsGrid = document.getElementById('results-grid');
+            resultsGrid.innerHTML = '';
+            
+            if (results.length === 0) {
+                resultsGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 20px;">没有找到匹配的商品</div>';
+                return;
+            }
+            
+            results.forEach(product => {
+                const card = createProductCard(product);
+                resultsGrid.appendChild(card);
+            });
+        }
+        
+        // 显示SQL语句
+        function displaySql(sql) {
+            sqlDisplay.textContent = sql;
+        }
+        
+        // 显示通知
+        function showNotification(message, type) {
+            notification.textContent = message;
+            notification.className = 'notification ' + type;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+        
+        // 查询商品
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const id = document.getElementById('search-id').value.trim();
+            const name = document.getElementById('search-name').value.trim();
+            const category = document.getElementById('search-category').value;
+            const priceMin = parseFloat(document.getElementById('search-price-min').value) || 0;
+            const priceMax = parseFloat(document.getElementById('search-price-max').value) || Infinity;
+            
+            // 构建SQL查询语句
+            let sql = `SELECT * FROM products WHERE 1=1`;
+            
+            if (id) sql += ` AND id = '${id}'`;
+            if (name) sql += ` AND name LIKE '%${name}%'`;
+            if (category) sql += ` AND category = '${category}'`;
+            if (priceMin > 0) sql += ` AND price >= ${priceMin}`;
+            if (priceMax < Infinity) sql += ` AND price <= ${priceMax}`;
+            
+            // 显示SQL语句
+            displaySql(sql);
+            
+            // 执行查询（模拟）
+            const results = products.filter(product => {
+                let matches = true;
+                
+                if (id && product.id !== id) matches = false;
+                if (name && !product.name.includes(name)) matches = false;
+                if (category && product.category !== category) matches = false;
+                if (product.price < priceMin || product.price > priceMax) matches = false;
+                
+                return matches;
+            });
+            
+            // 显示查询结果
+            displaySearchResults(results);
+        });
+        
+        // 添加商品
+        addForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const id = document.getElementById('add-id').value.trim();
+            const name = document.getElementById('add-name').value.trim();
+            const category = document.getElementById('add-category').value;
+            const price = parseFloat(document.getElementById('add-price').value);
+            const stock = parseInt(document.getElementById('add-stock').value);
+            const description = document.getElementById('add-description').value.trim();
+            const image = document.getElementById('add-image').value.trim();
+            const tag = document.getElementById('add-tag').value;
+            
+            // 检查ID是否已存在
+            if (products.some(p => p.id === id)) {
+                showNotification('商品ID已存在，请使用不同的ID', 'error');
+                return;
+            }
+            
+            // 构建SQL插入语句
+            const sql = `INSERT INTO products (id, name, category, price, stock, description, image, tag) 
+                        VALUES ('${id}', '${name}', '${category}', ${price}, ${stock}, '${description}', '${image}', '${tag}')`;
+            
+            // 显示SQL语句
+            displaySql(sql);
+            
+            // 执行插入（模拟）
+            const newProduct = { id, name, category, price, stock, description, image, tag };
+            products.push(newProduct);
+            
+            // 重新显示所有商品
+            displayAllProducts();
+            
+            // 重置表单
+            addForm.reset();
+            
+            showNotification('商品添加成功！', 'success');
+        });
+        
+        // 编辑商品
+        function editProduct(e) {
+            const productId = e.target.getAttribute('data-id');
+            const product = products.find(p => p.id === productId);
+            
+            if (!product) return;
+            
+            // 填充表单
+            document.getElementById('edit-id').value = product.id;
+            document.getElementById('edit-name').value = product.name;
+            document.getElementById('edit-category').value = product.category;
+            document.getElementById('edit-price').value = product.price;
+            document.getElementById('edit-stock').value = product.stock;
+            document.getElementById('edit-description').value = product.description || '';
+            document.getElementById('edit-image').value = product.image || '';
+            document.getElementById('edit-tag').value = product.tag || '';
+            
+            // 显示模态框
+            editModal.style.display = 'flex';
+        }
+        
+        // 关闭模态框
+        closeModal.addEventListener('click', function() {
+            editModal.style.display = 'none';
+        });
+        
+        // 点击模态框外部关闭
+        window.addEventListener('click', function(e) {
+            if (e.target === editModal) {
+                editModal.style.display = 'none';
+            }
+        });
+        
+        // 保存编辑
+        editForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const id = document.getElementById('edit-id').value;
+            const name = document.getElementById('edit-name').value.trim();
+            const category = document.getElementById('edit-category').value;
+            const price = parseFloat(document.getElementById('edit-price').value);
+            const stock = parseInt(document.getElementById('edit-stock').value);
+            const description = document.getElementById('edit-description').value.trim();
+            const image = document.getElementById('edit-image').value.trim();
+            const tag = document.getElementById('edit-tag').value;
+            
+            // 构建SQL更新语句
+            const sql = `UPDATE products 
+                        SET name = '${name}', category = '${category}', price = ${price}, 
+                        stock = ${stock}, description = '${description}', image = '${image}', tag = '${tag}' 
+                        WHERE id = '${id}'`;
+            
+            // 显示SQL语句
+            displaySql(sql);
+            
+            // 执行更新（模拟）
+            const index = products.findIndex(p => p.id === id);
+            if (index !== -1) {
+                products[index] = { id, name, category, price, stock, description, image, tag };
+                
+                // 重新显示所有商品
+                displayAllProducts();
+                
+                // 关闭模态框
+                editModal.style.display = 'none';
+                
+                showNotification('商品修改成功！', 'success');
+            }
+        });
+        
+        // 删除商品
+        function deleteProduct(e) {
+            if (!confirm('确定要删除这个商品吗？')) return;
+            
+            const productId = e.target.getAttribute('data-id');
+            
+            // 构建SQL删除语句
+            const sql = `DELETE FROM products WHERE id = '${productId}'`;
+            
+            // 显示SQL语句
+            displaySql(sql);
+            
+            // 执行删除（模拟）
+            products = products.filter(p => p.id !== productId);
+            
+            // 重新显示所有商品
+            displayAllProducts();
+            
+            showNotification('商品删除成功！', 'success');
+        }
+        
+        // 页面加载时显示所有商品
+        window.addEventListener('load', function() {
+            displayAllProducts();
+            displaySql('-- 初始化：SELECT * FROM products');
+        });
+        
+        // 创建商品卡片
+        function createProductCard(product) {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            
+            // 设置标签类名
+            let tagClass = '';
+            if (product.tag === '包邮') {
+                tagClass = 'tag-free-shipping';
+            } else if (product.tag === '热卖') {
+                tagClass = 'tag-hot';
+            } else if (product.tag === '新品') {
+                tagClass = 'tag-new';
+            }
+            
+            // 默认图片
+            const imageUrl = product.image || 'https://via.placeholder.com/300x300?text=无图片';
+            
+            card.innerHTML = `
+                <div class="product-image">
+                    <img src="${imageUrl}" alt="${product.name}">
+                    ${product.tag ? `<span class="product-tag ${tagClass}">${product.tag}</span>` : ''}
+                </div>
+                <div class="product-info">
+                    <div class="product-name">${product.name}</div>
+                    <div class="product-category">${product.category}</div>
+                    <div class="product-price"><span class="currency">¥</span>${product.price.toFixed(2)}</div>
+                    <div class="product-stock">库存: ${product.stock}件</div>
+                    <div class="product-actions">
+                        <button class="action-btn edit-btn" data-id="${product.id}">修改</button>
+                        <button class="action-btn delete-btn" data-id="${product.id}">删除</button>
+                    </div>
+                </div>
+            `;
+            
+            // 添加事件监听器
+            card.querySelector('.edit-btn').addEventListener('click', editProduct);
+            card.querySelector('.delete-btn').addEventListener('click', deleteProduct);
+            
+            return card;
+        }
+    </script>
+ <div class="container">
+        <div class="footer">
+              <p>© 2025  成都东软学院：余阳</p>
+    </div>
+ </div>
+</div>
+</body>
+</html> 

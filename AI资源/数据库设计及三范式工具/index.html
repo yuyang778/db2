@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+   <script src="page-protector.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据库设计互动套件</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsPlumb/2.15.6/js/jsplumb.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.11/interact.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>数据库设计互动套件</h1>
+        <nav>
+            <ul>
+                <li><a href="#" id="er-diagram-tab" class="active">ER图协作白板</a></li>
+                <li><a href="#" id="normalization-tab">规范化流程向导</a></li>
+                <li><a href="#" id="anti-patterns-tab">设计反例博物馆</a></li>
+                <li><a href="#" id="dynamic-tool-tab">动态规范化工具</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- ER图协作白板 -->
+        <section id="er-diagram" class="module active">
+            <div class="sidebar">
+                <h3>组件</h3>
+                <div class="component-container">
+                    <div class="component entity" draggable="true" data-type="entity">实体</div>
+                    <div class="component relationship" draggable="true" data-type="relationship">关系</div>
+                    <div class="component attribute" draggable="true" data-type="attribute">属性</div>
+                    <div class="component key-attribute" draggable="true" data-type="key-attribute">主键属性</div>
+                </div>
+                <div class="actions">
+                    <button id="generate-relation">生成关系模式</button>
+                    <button id="clear-diagram">清除画布</button>
+                    <button id="save-diagram">保存设计</button>
+                    <button id="load-diagram">加载设计</button>
+                </div>
+            </div>
+            <div class="workspace" id="er-workspace">
+                <div class="drawing-area" id="drawing-area"></div>
+            </div>
+            <div class="output-panel">
+                <h3>关系模式输出</h3>
+                <div id="relation-output"></div>
+            </div>
+        </section>
+
+        <!-- 规范化流程向导 -->
+        <section id="normalization" class="module">
+            <div class="control-panel">
+                <button id="prev-step">上一步</button>
+                <span id="step-indicator">步骤 1/6</span>
+                <button id="next-step">下一步</button>
+            </div>
+            <div class="normalization-container">
+                <div class="step-description">
+                    <h3 id="step-title">规范化入门</h3>
+                    <p id="step-content">数据库规范化是一组通过分解关系来消除数据库中冗余和异常的过程。我们将逐步了解从1NF到3NF的过程。</p>
+                </div>
+                <div class="visualization-area" id="normalization-visual">
+                    <!-- 动画和可视化内容将通过JavaScript动态生成 -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 设计反例博物馆 -->
+        <section id="anti-patterns" class="module">
+            <div class="cases-list">
+                <h3>问题案例</h3>
+                <ul id="case-selector">
+                    <li data-case="redundancy" class="selected">数据冗余问题</li>
+                    <li data-case="update-anomaly">更新异常</li>
+                    <li data-case="delete-anomaly">删除异常</li>
+                    <li data-case="insert-anomaly">插入异常</li>
+                </ul>
+            </div>
+            <div class="case-display">
+                <div class="case-description" id="case-description">
+                    <!-- 案例描述将通过JavaScript动态生成 -->
+                </div>
+                <div class="case-demo" id="case-demo">
+                    <!-- 案例演示将通过JavaScript动态生成 -->
+                </div>
+                <div class="case-actions">
+                    <button id="demonstrate">数据操作</button>
+                    <button id="fix-design">查看解决方案</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 动态规范化工具 -->
+        <section id="dynamic-tool" class="module">
+            <div class="instruction-panel">
+                <h3>动态规范化工具</h3>
+                <p>尝试手动将下方表格拆分为满足更高范式的表结构</p>
+                <div class="current-status">
+                    <span>当前范式等级：</span>
+                    <span id="normalization-level">未规范化</span>
+                </div>
+                <div class="feedback" id="feedback-message"></div>
+            </div>
+            <div class="table-workspace">
+                <div class="original-table">
+                    <h4>原始表</h4>
+                    <div id="original-table-container">
+                        <!-- 原始表将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+                <div class="decomposed-tables">
+                    <h4>分解后的表 <button id="add-table">添加新表</button></h4>
+                    <div id="decomposed-tables-container">
+                        <!-- 分解表将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button id="check-normalization">检查规范化等级</button>
+                <button id="get-hint">获取提示</button>
+                <button id="reset-tables">重置</button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="status-bar" id="status-message">准备就绪</div>
+        <div class="help-links">
+            <a href="#" id="show-help">帮助</a> | 
+            <a href="#" id="show-tutorial">教程</a>
+            <span style="margin-left: 10px;">@2025 成都东软学院 余阳</span>
+        </div>
+    </footer>
+
+    <!-- 帮助对话框 -->
+    <div id="help-dialog" class="dialog">
+        <div class="dialog-content">
+            <span class="close-btn">&times;</span>
+            <h2>帮助文档</h2>
+            <div class="help-content">
+                <h3>ER图协作白板</h3>
+                <p>从左侧组件区拖拽实体、关系和属性到画布中。连接组件创建完整的ER图，然后点击"生成关系模式"转换为关系数据库模式。</p>
+                
+                <h3>规范化流程向导</h3>
+                <p>查看从1NF到3NF的规范化过程动画演示。使用前进/后退按钮控制演示流程。</p>
+                
+                <h3>设计反例博物馆</h3>
+                <p>探索常见的数据库设计问题。点击"插入数据"按钮查看异常演示，并学习如何避免这些问题。</p>
+                
+                <h3>动态规范化工具</h3>
+                <p>实践规范化技术。尝试将原始表拆分为符合更高范式等级的多个表，并获得实时反馈。</p>
+
+               
+            </div>
+        </div>
+    </div>
+
+    <!-- 教程对话框 -->
+    <div id="tutorial-dialog" class="dialog">
+        <div class="dialog-content">
+            <span class="close-btn">&times;</span>
+            <h2>入门教程  </h2>
+            <div class="tutorial-content">
+                <h3>第1步：创建ER图</h3>
+                <p>打开"ER图协作白板"，从左侧拖拽实体和属性到画布。使用关系组件连接多个实体。</p>
+                
+                <h3>第2步：转换为关系模式</h3>
+                <p>完成ER图后，点击"生成关系模式"查看对应的关系数据库结构。</p>
+                
+                <h3>第3步：理解规范化</h3>
+                <p>访问"规范化流程向导"了解规范化过程的每个步骤。</p>
+                
+                <h3>第4步：识别设计问题</h3>
+                <p>探索"设计反例博物馆"，查看不良设计导致的问题。</p>
+                
+                <h3>第5步：实践规范化</h3>
+                <p>使用"动态规范化工具"亲自尝试表的分解和规范化。</p>
+             
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 

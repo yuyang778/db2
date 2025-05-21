@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html>
+  
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="theme-color" content="#8000ff">
+    <title>SQL智能实验室​</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/theme/dracula/dracula.min.css">
+    <style>
+        /* CSS变量定义：用于全局颜色和样式统一 */
+        :root {
+            --primary-color: #0077fffb;    /* 主色调：紫色 */
+            --secondary-color: #0088ffe2; /* 次要色调：深紫色 */
+            --success-color: #4CAF50;    /* 成功提示色：绿色 */
+            --error-color: #f44336;      /* 错误提示色：红色 */
+            --background-color: #eef2f7; /* 背景色：浅蓝灰色，更柔和 */
+            --card-background: #ffffff;  /* 卡片背景色：纯白色 */
+            --text-color: #333;          /* 文本色：深灰色 */
+            --border-radius: 8px;        /* 边框圆角 */
+            --box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* 阴影效果 */
+            --transition: all 0.3s ease; /* 过渡动画 */
+        }
+
+        /* 基础页面样式 */
+        body {
+            margin: 0;                   /* 清除外边距 */
+            padding: 0;                  /* 清除内边距 */
+            font-family: 'Segoe UI', Arial, sans-serif; /* 字体设置 */
+            background-color: var(--background-color) !important;  /* 背景色，强制应用 */
+            color: var(--text-color);                  /* 文本色 */
+            line-height: 1.6;                          /* 行高 */
+            min-height: 100vh;           /* 最小高度为视口高度 */
+        }
+
+        /* 确保HTML和其他父元素也应用背景色 */
+        html {
+            background-color: var(--background-color) !important; /* 背景色，强制应用 */
+        }
+
+        /* 页面头部样式 */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); /* 渐变背景 */
+            color: white;                /* 文字颜色：白色 */
+            padding: 25px;               /* 内边距 */
+            text-align: center;          /* 文本居中 */
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15); /* 阴影效果 */
+        }
+
+        /* 标题样式 */
+        header h1 {
+            margin: 0;                   /* 清除外边距 */
+            font-size: 2.2em;            /* 字体大小 */
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2); /* 文字阴影 */
+        }
+
+        /* 副标题样式 */
+        header p {
+            margin: 10px 0 0;            /* 外边距 */
+            opacity: 0.9;                /* 透明度 */
+            font-size: 1.1em;            /* 字体大小 */
+        }
+
+        /* 主容器：网格布局 */
+        .container {
+            display: grid;               /* 网格布局 */
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 650px), 1fr)); /* 响应式列设置 */
+            gap: clamp(15px, 3vw, 30px); /* 列间距 */
+            width: min(95%, 1400px);     /* 容器宽度 */
+            margin: 0 auto;              /* 居中显示 */
+            padding: clamp(15px, 3vw, 30px); /* 内边距 */
+            align-items: stretch;        /* 拉伸项目以填充容器 */
+        }
+
+        /* 标题样式 */
+        h2 {
+            margin-bottom: 20px;         /* 底部外边距 */
+            color: var(--primary-color); /* 主色调 */
+            display: flex;               /* 弹性布局 */
+            align-items: center;         /* 垂直居中 */
+            gap: 10px;                   /* 元素间距 */
+            font-weight: 600;            /* 字体粗细 */
+        }
+
+        /* 按钮组容器 */
+        .button-group {
+            display: flex;               /* 弹性布局 */
+            justify-content: space-between; /* 两端对齐 */
+            gap: 10px;                   /* 按钮间距 */
+            margin-bottom: 15px;         /* 底部外边距 */
+            flex-wrap: wrap;             /* 允许换行 */
+        }
+
+        /* 左右按钮容器 */
+        .left-buttons, .right-buttons {
+            display: flex;               /* 弹性布局 */
+            gap: 10px;                   /* 按钮间距 */
+        }
+
+        /* 按钮样式 */
+        button {
+            background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color)); /* 渐变背景 */
+            color: white;                /* 文字颜色 */
+            border: none;                /* 无边框 */
+            padding: 10px 20px;          /* 内边距 */
+            border-radius: var(--border-radius); /* 圆角 */
+            cursor: pointer;             /* 鼠标指针 */
+            font-size: 14px;             /* 字体大小 */
+            transition: var(--transition); /* 过渡效果 */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* 阴影 */
+            font-weight: 500;            /* 字体粗细 */
+        }
+
+        /* 按钮悬停效果 */
+        button:hover {
+            background: linear-gradient(to bottom, var(--secondary-color), var(--primary-color)); /* 反向渐变 */
+            transform: translateY(-2px); /* 上移效果 */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* 增强阴影 */
+        }
+
+        /* 修复CodeMirror编辑器的光标问题 */
+        .CodeMirror-cursor {
+            border-left: 2px solid white !important; /* 白色光标 */
+            width: 0 !important;         /* 宽度为0 */
+            background: transparent !important; /* 透明背景 */
+        }
+
+        /* CodeMirror编辑器容器样式 */
+        .CodeMirror {
+            border-radius: var(--border-radius); /* 圆角 */
+            height: calc(90vh - 250px) !important; /* 高度计算，减少10% */
+            min-height: 200px;           /* 最小高度 */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* 阴影 */
+            font-size: 15px;             /* 字体大小 */
+            background-color: #1e1e1e;   /* 背景色：深色 */
+            color: #d4d4d4;              /* 文本色：浅色 */
+            overflow: auto;              /* 溢出处理 */
+            border: 1px solid rgba(0,0,0,0.1); /* 边框 */
+        }
+
+        /* 结果区域容器样式 */
+        .result-section {
+            background: var(--card-background); /* 使用卡片背景色变量 */
+            border-radius: var(--border-radius); /* 圆角 */
+            padding: 20px;               /* 内边距 */
+            margin-top: 0;               /* 上边距 */
+            box-shadow: var(--box-shadow); /* 阴影 */
+            transition: var(--transition); /* 过渡效果 */
+            overflow-y: auto;            /* 垂直溢出：滚动 */
+            overflow-x: auto;            /* 水平溢出：滚动 */
+            border: 1px solid rgba(0,0,0,0.05); /* 边框 */
+            position: relative;          /* 相对定位 */
+        }
+
+        /* 第一个结果区域特殊样式 */
+        .result-section:first-child {
+            flex: 1;                     /* 弹性伸展 */
+            margin-bottom: 20px;         /* 底部外边距 */
+            min-height: 100px;           /* 最小高度 */
+        }
+
+        /* 最后一个结果区域特殊样式 */
+        .result-section:last-child {
+            flex: 1;                     /* 弹性伸展 */
+            min-height: 100px;           /* 最小高度 */
+        }
+
+        /* 结果区域悬停效果 */
+        .result-section:hover {
+            transform: translateY(-2px); /* 上移效果 */
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1); /* 增强阴影 */
+        }
+
+        /* 结果区域容器 */
+        .results-container {
+            height: calc(100vh - 250px); /* 高度计算 */
+            display: flex;               /* 弹性布局 */
+            flex-direction: column;      /* 垂直排列 */
+            justify-content: space-between; /* 两端对齐 */
+        }
+
+        /* 三级标题样式 */
+        h3 {
+            margin-top: 0;               /* 上边距 */
+            color: var(--primary-color); /* 主色调 */
+            font-size: 1.2em;            /* 字体大小 */
+            border-bottom: 2px solid rgba(128, 0, 255, 0.2); /* 底部边框 */
+            padding-bottom: 8px;         /* 底部内边距 */
+        }
+
+        /* 四级标题样式 */
+        h4 {
+            color: var(--primary-color); /* 主色调 */
+            margin: 15px 0 10px;         /* 外边距 */
+        }
+
+        /* 表格样式 */
+        table {
+            border-collapse: separate;   /* 边框分离 */
+            border-spacing: 0;           /* 边框间距 */
+            width: 100%;                 /* 宽度 */
+            margin: 15px 0;              /* 外边距 */
+            border-radius: var(--border-radius); /* 圆角 */
+            overflow: hidden;            /* 隐藏溢出 */
+            box-shadow: var(--box-shadow); /* 阴影 */
+            background-color: var(--card-background); /* 卡片背景色 */
+        }
+
+        /* 表格单元格样式 */
+        th, td {
+            padding: 12px;               /* 内边距 */
+            text-align: left;            /* 左对齐 */
+            border-bottom: 1px solid #eee; /* 底部边框 */
+        }
+
+        /* 表格头部样式 */
+        th {
+            background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color)); /* 渐变背景 */
+            color: white;                /* 文字颜色 */
+            font-weight: 500;            /* 字体粗细 */
+        }
+
+        /* 表格偶数行样式 */
+        tr:nth-child(even) {
+            background-color: rgba(245, 247, 250, 0.5);   /* 背景色：浅灰，带透明度 */
+        }
+
+        /* 表格行悬停效果 */
+        tr:hover {
+            background-color: rgba(240, 240, 240, 0.7);   /* 背景色：灰色，带透明度 */
+        }
+
+        /* 成功信息样式 */
+        .success {
+            color: var(--success-color); /* 成功色 */
+            padding: 12px 15px;          /* 内边距 */
+            background-color: #e8f5e9;   /* 背景色：浅绿 */
+            border-left: 4px solid var(--success-color); /* 左边框 */
+            border-radius: var(--border-radius); /* 圆角 */
+            margin-bottom: 15px;         /* 底部外边距 */
+            font-weight: 500;            /* 字体粗细 */
+        }
+
+        /* 错误信息样式 */
+        .error {
+            color: var(--error-color);   /* 错误色 */
+            padding: 12px 15px;          /* 内边距 */
+            background-color: #ffebee;   /* 背景色：浅红 */
+            border-left: 4px solid var(--error-color); /* 左边框 */
+            border-radius: var(--border-radius); /* 圆角 */
+            margin-bottom: 15px;         /* 底部外边距 */
+            font-weight: 500;            /* 字体粗细 */
+        }
+
+        /* 居中标题样式 */
+        h2.title {
+            margin-bottom: 20px;         /* 底部外边距 */
+            color: var(--primary-color); /* 主色调 */
+            text-align: center;          /* 居中对齐 */
+            font-weight: 600;            /* 字体粗细 */
+            width: 100%;                 /* 宽度 */
+        }
+
+        /* 教程区域样式 */
+        .tutorial-section {
+            background: var(--card-background); /* 使用卡片背景色变量 */
+            border-radius: var(--border-radius); /* 圆角 */
+            padding: 25px;               /* 内边距 */
+            margin: 30px auto;           /* 外边距 */
+            box-shadow: var(--box-shadow); /* 阴影 */
+            max-width: 1400px;           /* 最大宽度 */
+            width: 95%;                  /* 宽度 */
+        }
+
+        /* 教程区域标题样式 */
+        .tutorial-section h2 {
+            text-align: center;          /* 居中对齐 */
+            color: var(--primary-color); /* 主色调 */
+            margin-bottom: 25px;         /* 底部外边距 */
+        }
+
+        /* 教程导航栏样式 */
+        .tutorial-nav {
+            display: flex;               /* 弹性布局 */
+            gap: 15px;                   /* 项目间距 */
+            margin-bottom: 20px;         /* 底部外边距 */
+            border-bottom: 2px solid #eee; /* 底部边框 */
+            padding-bottom: 10px;        /* 底部内边距 */
+            justify-content: center;     /* 居中对齐 */
+        }
+
+        /* 教程导航按钮样式 */
+        .tutorial-nav button {
+            background: transparent;     /* 透明背景 */
+            color: var(--text-color);    /* 文本色 */
+            box-shadow: none;            /* 无阴影 */
+            padding: 8px 15px;           /* 内边距 */
+        }
+
+        /* 教程导航按钮激活和悬停样式 */
+        .tutorial-nav button.active, .tutorial-nav button:hover {
+            background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color)); /* 渐变背景 */
+            color: white;                /* 文字颜色 */
+            transform: none;             /* 无变换 */
+        }
+
+        /* 教程内容默认隐藏 */
+        .tutorial-content {
+            display: none;               /* 隐藏 */
+        }
+
+        /* 激活的教程内容显示 */
+        .tutorial-content.active {
+            display: block;              /* 显示为块元素 */
+        }
+
+        /* 教程内容标题样式 */
+        .tutorial-content h3 {
+            margin-top: 20px;            /* 上边距 */
+            border-bottom: 2px solid rgba(128, 0, 255, 0.2); /* 底部边框 */
+            padding-bottom: 8px;         /* 底部内边距 */
+        }
+
+        /* 代码文本样式 */
+        .tutorial-content code {
+            background: #f5f5f5;         /* 背景色：灰色 */
+            padding: 2px 5px;            /* 内边距 */
+            border-radius: 3px;          /* 圆角 */
+            font-family: Consolas, monospace; /* 等宽字体 */
+            color: var(--primary-color); /* 主色调 */
+        }
+
+        /* 代码示例区块样式 */
+        .code-example {
+            background: #1e1e1e;         /* 背景色：深色 */
+            color: #d4d4d4;              /* 文本色：浅色 */
+            padding: 15px;               /* 内边距 */
+            border-radius: var(--border-radius); /* 圆角 */
+            margin: 15px 0;              /* 外边距 */
+            font-family: Consolas, monospace; /* 等宽字体 */
+            white-space: pre;            /* 保留空白 */
+            overflow-x: auto;            /* 水平溢出：滚动 */
+        }
+
+        /* 警告信息样式 */
+        .warning {
+            background-color: #fff3cd;   /* 背景色：浅黄 */
+            color: #856404;              /* 文本色：深黄 */
+            padding: 12px 15px;          /* 内边距 */
+            border-left: 4px solid #ffc107; /* 左边框 */
+            border-radius: var(--border-radius); /* 圆角 */
+            margin: 15px 0;              /* 外边距 */
+        }
+
+        /* 响应式布局：小屏幕适配 */
+        @media (max-width: 768px) {
+            body {
+                padding: 0;              /* 无内边距 */
+                background-color: var(--background-color) !important; /* 强制应用背景色 */
+            }
+            html {
+                background-color: var(--background-color) !important; /* 强制应用背景色 */
+            }
+            header {
+                padding: clamp(15px, 3vw, 25px); /* 响应式内边距 */
+            }
+            header h1 {
+                font-size: clamp(1.5em, 5vw, 2.2em); /* 响应式字体大小 */
+            }
+            header p {
+                font-size: clamp(0.9em, 3vw, 1.1em); /* 响应式字体大小 */
+            }
+            .container {
+                grid-template-columns: 1fr; /* 单列布局 */
+                padding: clamp(10px, 3vw, 20px); /* 减小内边距 */
+            }
+            .CodeMirror {
+                height: clamp(200px, 45vh, 350px) !important; /* 响应式高度，调整为原来的90% */
+                font-size: 14px; /* 稍小的字体 */
+            }
+            .results-container {
+                height: auto;            /* 自动高度 */
+                margin-top: 20px;        /* 上边距 */
+            }
+            .result-section {
+                min-height: 150px;       /* 最小高度 */
+                padding: clamp(15px, 3vw, 20px); /* 响应式内边距 */
+            }
+            button {
+                padding: clamp(8px, 1.5vw, 10px) clamp(15px, 3vw, 20px); /* 响应式内边距 */
+                font-size: clamp(12px, 2.5vw, 14px); /* 响应式字体大小 */
+            }
+            .font-size-controls {
+                justify-content: center; /* 在小屏幕上居中显示 */
+                margin-top: 8px;
+            }
+            .font-size-btn {
+                padding: 5px 8px;
+                font-size: 12px;
+            }
+            table {
+                font-size: 14px; /* 小屏幕表格字体缩小 */
+            }
+            th, td {
+                padding: 8px 10px; /* 小屏幕单元格内边距减小 */
+            }
+            .tutorial-section {
+                padding: 15px; /* 减小教程区域内边距 */
+            }
+            .tutorial-nav {
+                flex-wrap: wrap; /* 允许导航按钮换行 */
+                justify-content: center; /* 中心对齐 */
+            }
+            .tutorial-nav button {
+                padding: 6px 12px; /* 减小按钮内边距 */
+                margin-bottom: 5px; /* 底部外边距 */
+            }
+            .code-example {
+                font-size: 13px; /* 代码示例字体缩小 */
+                padding: 12px; /* 减小内边距 */
+            }
+            footer p {
+                flex-direction: column; /* 垂直排列 */
+                gap: 5px; /* 间距 */
+                text-align: center; /* 居中对齐 */
+            }
+        }
+
+        /* 针对更小屏幕的额外适配 */
+        @media (max-width: 480px) {
+            .button-group {
+                flex-direction: column; /* 按钮组垂直排列 */
+            }
+            .left-buttons, .right-buttons {
+                width: 100%; /* 全宽 */
+                justify-content: space-between; /* 均匀分布 */
+            }
+            th, td {
+                padding: 6px 8px; /* 进一步减小单元格内边距 */
+                font-size: 13px; /* 更小的字体 */
+            }
+            .CodeMirror {
+                font-size: 13px; /* 更小的编辑器字体 */
+            }
+        }
+
+        /* 页脚样式 */
+        footer {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); /* 渐变背景 */
+            color: white;                /* 文字颜色 */
+            text-align: center;          /* 居中对齐 */
+            padding: 15px;               /* 内边距 */
+            margin-top: 30px;            /* 上边距 */
+            box-shadow: 0 -3px 10px rgba(0,0,0,0.1); /* 阴影 */
+        }
+
+        /* 页脚文本样式 */
+        footer p {
+            margin: 0;                   /* 无外边距 */
+            display: flex;               /* 弹性布局 */
+            justify-content: space-between; /* 两端对齐 */
+            width: 90%;                  /* 宽度 */
+            max-width: 1400px;           /* 最大宽度 */
+            margin: 0 auto;              /* 居中显示 */
+        }
+
+        /* 字体大小调整按钮容器 */
+        .font-size-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            justify-content: flex-end;
+        }
+        
+        /* 字体大小按钮样式 */
+        .font-size-btn {
+            padding: 5px 10px;
+            border-radius: var(--border-radius);
+            background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--box-shadow);
+        }
+        
+        .font-size-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>SQL智能实验室​</h1>
+        <p>由AI导师实时指导的交互式SQL训练场，学习路径推荐</p>
+    </header>
+   
+    <div class="container">
+        <div>
+           
+            <div class="button-group">
+                <div class="left-buttons">
+                    <button onclick="executeSQL()">执行查询</button>
+                   <button onclick="window.open('sqlAI.html', '_blank', 'noopener noreferrer')">SQL助手</button>
+                </div>
+                
+                <div class="right-buttons">
+                    <button onclick="showExample()">打开</button>
+                    <button onclick="saveSQL()">保存</button>
+                    <button onclick="clearEditor()">清空</button>
+                     <button onclick="window.open('XKGL.HTML', '_blank', 'noopener noreferrer')">示例数据库</button>
+                </div>
+               
+            </div>
+            <textarea id="code" >
+--如果检查到Department表存在，则删除
+DROP TABLE IF EXISTS Department;
+
+--创建Department表
+CREATE TABLE Department(
+    DepartmentID CHAR(4) PRIMARY KEY,
+    DepartmentName VARCHAR(20) NOT NULL UNIQUE,
+    DepartmentHeader VARCHAR(8) NOT NULL,
+    TeacherNum INT
+);
+
+--插入数据
+INSERT INTO Department(DepartmentID, DepartmentName, DepartmentHeader, TeacherNum) VALUES('Dp01', '计算机系', '罗浩然', 120);
+INSERT INTO Department(DepartmentID, DepartmentName, DepartmentHeader, TeacherNum) VALUES('Dp02', '信管系', '李伶俐', NULL);
+INSERT INTO Department(DepartmentID, DepartmentName, DepartmentHeader, TeacherNum) VALUES('Dp03', '英语系', '李宏伟', 10);
+
+--查询Department表
+select * from Department</textarea>
+            <div class="font-size-controls">
+                <button class="font-size-btn" onclick="decreaseFontSize()">字体减小</button>
+                <button class="font-size-btn" onclick="increaseFontSize()">字体增大</button>
+            </div>
+        </div>
+        
+        <div class="results-container">
+            <div class="result-section">
+                <h3>执行结果</h3>
+                <div id="result"></div>
+            </div>
+            <div class="result-section">
+                <h3>当前数据状态</h3>
+                <div id="dataPreview"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/mode/sql/sql.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/addon/edit/matchbrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/addon/edit/closebrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.1/sql-wasm.js"></script>
+
+    <script>
+        // 数据库对象，初始为null
+        let db = null;
+
+        /**
+         * 打开本地SQL文件
+         * 创建一个隐藏的文件选择输入框，让用户选择文件，
+         * 读取文件内容并载入到编辑器中
+         */
+        function showExample() {
+            // 创建文件输入元素
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.sql,.txt'; // 限制文件类型为SQL和文本文件
+            
+            // 文件选择完成后的回调
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return; // 如果没有选择文件，则退出
+                
+                // 创建文件读取器
+                const reader = new FileReader();
+                // 文件读取完成后的回调
+                reader.onload = function(e) {
+                    // 将文件内容设置到编辑器
+                    editor.setValue(e.target.result);
+                };
+                // 读取失败的回调
+                reader.onerror = function(e) {
+                    alert('读取文件失败：' + e.target.error.message);
+                };
+                // 以文本形式读取文件
+                reader.readAsText(file, 'UTF-8');
+            };
+            
+            // 模拟点击文件输入框，触发文件选择对话框
+            input.click();
+        }
+
+        /**
+         * 清空编辑器内容
+         */
+        function clearEditor() {
+            editor.setValue('');
+        }
+
+        /**
+         * 初始化SQL.js数据库
+         * @returns {Promise<Database>} SQL.js数据库实例
+         */
+        const initDatabase = async () => {
+            // 加载SQL.js库，并配置wasm文件位置
+            const SQL = await initSqlJs({ locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.1/${file}` });
+            // 创建并返回新的数据库实例
+            return new SQL.Database();
+        };
+
+        // 初始化CodeMirror编辑器
+        const editor = CodeMirror.fromTextArea(document.getElementById('code'), {
+            mode: 'sql',                // 语法模式：SQL
+            theme: 'dracula',           // 主题：Dracula暗色主题
+            lineNumbers: true,          // 显示行号
+            indentWithTabs: true,       // 使用Tab进行缩进
+            extraKeys: {"Ctrl-Enter": executeSQL}, // 快捷键：Ctrl+Enter执行SQL
+            lineWrapping: true,         // 自动换行
+            matchBrackets: true,        // 匹配括号
+            autoCloseBrackets: true,    // 自动闭合括号
+            styleActiveLine: true       // 高亮当前行
+        });
+
+        /**
+         * 执行SQL查询核心逻辑
+         * 获取编辑器中的SQL代码，执行查询，并显示结果
+         */
+        async function executeSQL() {
+            // 如果数据库未初始化，则初始化数据库
+            if (!db) db = await initDatabase();
+            // 获取编辑器中的SQL代码
+            const sql = editor.getValue();
+            // 获取结果显示区域
+            const resultDiv = document.getElementById('result');
+            // 清空结果区域
+            resultDiv.innerHTML = '';
+            
+            try {
+                // 分割多条SQL语句（按分号分割，并过滤空语句）
+                const statements = sql.split(';').filter(s => s.trim());
+                
+                // 逐条执行SQL语句
+                for (const stmt of statements) {
+                    const cleanedStmt = stmt.trim();
+                    if (!cleanedStmt) continue; // 跳过空语句
+
+                    // 获取语句的第一个单词，判断语句类型
+                    const firstWord = cleanedStmt.split(/\s+/)[0].toUpperCase();
+                    
+                    if (firstWord === 'SELECT') {
+                        // 处理查询语句
+                        const result = db.exec(cleanedStmt);
+                        renderSelectResult(result);
+                    } else {
+                        // 处理数据修改语句（INSERT, UPDATE, DELETE等）
+                        db.run(cleanedStmt);
+                        renderMutationResult(firstWord, db.getRowsModified());
+                    }
+                }
+                
+                // 更新数据预览区域
+                updateDataPreview();
+            } catch (err) {
+                // 捕获并显示错误信息
+                resultDiv.innerHTML = `<div class="error">错误: ${err.message}</div>`;
+            }
+        }
+
+        /**
+         * 渲染SELECT查询结果
+         * @param {Array} result - 查询结果数组
+         */
+        function renderSelectResult(result) {
+            const resultDiv = document.getElementById('result');
+            
+            // 遍历每个结果集
+            result.forEach(res => {
+                // 创建成功消息，显示记录数量
+                let html = `<div class="success">查询到 ${res.values.length} 条记录</div>`;
+                // 创建表格开始标签和表头行
+                html += '<table><tr>';
+                
+                // 生成表头单元格（列名）
+                res.columns.forEach(col => {
+                    html += `<th>${col}</th>`;
+                });
+                html += '</tr>';
+                
+                // 生成数据行
+                res.values.forEach(row => {
+                    html += '<tr>';
+                    // 生成每行的单元格
+                    row.forEach(cell => {
+                        // 如果值为null，显示为斜体"NULL"，否则直接显示值
+                        html += `<td>${cell === null ? '<em>NULL</em>' : cell}</td>`;
+                    });
+                    html += '</tr>';
+                });
+                
+                // 添加表格结束标签
+                html += '</table>';
+                // 将生成的HTML添加到结果区域
+                resultDiv.innerHTML += html;
+            });
+        }
+
+        /**
+         * 渲染修改操作（非SELECT）的结果
+         * @param {string} type - 操作类型（INSERT/UPDATE/DELETE等）
+         * @param {number} rowsAffected - 受影响的行数
+         */
+        function renderMutationResult(type, rowsAffected) {
+            const resultDiv = document.getElementById('result');
+            // 操作类型的中文名称映射
+            const operationNames = {
+                'INSERT': '插入',
+                'UPDATE': '更新',
+                'DELETE': '删除',
+                'CREATE': '创建',
+                'DROP': '删除'
+            };
+            
+            // 如果是已知的操作类型，显示成功消息
+            if (operationNames[type]) {
+                resultDiv.innerHTML += `
+                    <div class="success">
+                        ${operationNames[type]}操作成功，影响 ${rowsAffected} 行
+                    </div>
+                `;
+            }
+        }
+
+        /**
+         * 更新数据预览区域
+         * 显示当前数据库中所有表的数据
+         */
+        function updateDataPreview() {
+            const previewDiv = document.getElementById('dataPreview');
+            try {
+                // 查询所有表名
+                const tables = db.exec("SELECT name FROM sqlite_master WHERE type='table'");
+                // 清空预览区域
+                previewDiv.innerHTML = '';
+                
+                // 遍历每个表
+                tables.forEach(table => {
+                    table.values.forEach(tableName => {
+                        // 查询表中所有数据
+                        const result = db.exec(`SELECT * FROM ${tableName}`);
+                        result.forEach(res => {
+                            // 创建表标题，显示表名和行数
+                            let html = `<h4>表 ${tableName} 数据 (${res.values.length} 行)</h4>`;
+                            // 创建表格开始标签和表头行
+                            html += '<table><tr>';
+                            
+                            // 生成表头单元格（列名）
+                            res.columns.forEach(col => {
+                                html += `<th>${col}</th>`;
+                            });
+                            html += '</tr>';
+                            
+                            // 生成数据行
+                            res.values.forEach(row => {
+                                html += '<tr>';
+                                // 生成每行的单元格
+                                row.forEach(cell => {
+                                    // 如果值为null，显示为斜体"NULL"，否则直接显示值
+                                    html += `<td>${cell === null ? '<em>NULL</em>' : cell}</td>`;
+                                });
+                                html += '</tr>';
+                            });
+                            
+                            // 添加表格结束标签
+                            html += '</table>';
+                            // 将生成的HTML添加到预览区域
+                            previewDiv.innerHTML += html;
+                        });
+                    });
+                });
+            } catch (err) {
+                // 捕获并显示错误信息
+                previewDiv.innerHTML = `<div class="error">预览错误: ${err.message}</div>`;
+            }
+        }
+
+        /**
+         * 保存SQL代码为文件
+         * 将编辑器中的SQL代码保存为.sql文件
+         */
+        function saveSQL() {
+            // 获取编辑器中的SQL代码
+            const sql = editor.getValue();
+            // 检查是否为空
+            if (!sql.trim()) {
+                alert('代码区域为空，无需保存');
+                return;
+            }
+            
+            // 创建Blob对象
+            const blob = new Blob([sql], { type: 'text/plain' });
+            // 创建下载链接
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'query.sql'; // 设置文件名
+            // 添加到文档并点击，触发下载
+            document.body.appendChild(a);
+            a.click();
+            // 清理：移除链接元素并释放URL
+            document.body.removeChild(a);
+            URL.revokeObjectURL(a.href);
+        }
+
+        /**
+         * 增大编辑器字体大小
+         */
+        function increaseFontSize() {
+            const currentSize = parseInt(window.getComputedStyle(document.querySelector('.CodeMirror')).fontSize);
+            const newSize = currentSize + 2; // 每次增加2px
+            document.querySelector('.CodeMirror').style.fontSize = newSize + 'px';
+        }
+
+        /**
+         * 减小编辑器字体大小
+         */
+        function decreaseFontSize() {
+            const currentSize = parseInt(window.getComputedStyle(document.querySelector('.CodeMirror')).fontSize);
+            const newSize = Math.max(currentSize - 2, 10); // 每次减少2px，但不小于10px
+            document.querySelector('.CodeMirror').style.fontSize = newSize + 'px';
+        }
+    </script>
+    
+    <div class="tutorial-section">
+        <h2>SQL 学习教程</h2>
+        <div class="tutorial-nav">
+            <button onclick="showTutorial('create-tables')" class="active">创建表</button>
+            <button onclick="showTutorial('data-manipulation')">数据操作</button>
+            <button onclick="showTutorial('data-query')">数据查询</button>
+        </div>
+        
+        <div id="create-tables" class="tutorial-content active">
+            <h3>创建表 (CREATE TABLE)</h3>
+            <p>创建表是SQL数据库操作的基础。表是数据库中存储数据的主要对象，由行和列组成。</p>
+            
+            <h4>基本语法</h4>
+            <div class="code-example">CREATE TABLE 表名(
+    列名1 数据类型 [约束条件],
+    列名2 数据类型 [约束条件],
+    ...
+    列名n 数据类型 [约束条件]
+);</div>
+            
+            <h4>常用数据类型</h4>
+            <ul>
+                <li><code>INT</code> - 整数</li>
+                <li><code>FLOAT</code>/<code>DOUBLE</code> - 浮点数</li>
+                <li><code>CHAR(n)</code> - 固定长度字符串，最多n个字符</li>
+                <li><code>VARCHAR(n)</code> - 可变长度字符串，最多n个字符</li>
+                <li><code>DATE</code> - 日期值 (YYYY-MM-DD)</li>
+                <li><code>TIME</code> - 时间值 (HH:MM:SS)</li>
+                <li><code>DATETIME</code> - 日期和时间的组合</li>
+            </ul>
+            
+            <h4>常用约束条件</h4>
+            <ul>
+                <li><code>PRIMARY KEY</code> - 主键约束，标识表中的唯一记录</li>
+                <li><code>FOREIGN KEY</code> - 外键约束，用于建立表之间的关系</li>
+                <li><code>NOT NULL</code> - 列不能包含NULL值</li>
+                <li><code>UNIQUE</code> - 列中的所有值必须不同</li>
+                <li><code>DEFAULT 值</code> - 为列设置默认值</li>
+                <li><code>CHECK(条件)</code> - 指定列必须满足的条件</li>
+            </ul>
+            
+            <h4>示例</h4>
+            <div class="code-example">CREATE TABLE Students(
+    StudentID INT PRIMARY KEY,
+    StudentName VARCHAR(50) NOT NULL,
+    Age INT CHECK(Age > 0),
+    Gender CHAR(1),
+    Department VARCHAR(50),
+    EnrollmentDate DATE DEFAULT CURRENT_DATE
+);</div>
+        </div>
+        
+        <div id="data-manipulation" class="tutorial-content">
+            <h3>数据操作 (DML - Data Manipulation Language)</h3>
+            <p>数据操作语言用于向数据库添加、修改和删除数据。</p>
+            
+            <h4>INSERT - 插入数据</h4>
+            <div class="code-example">-- 插入完整行
+INSERT INTO 表名 VALUES (值1, 值2, ..., 值n);
+
+-- 插入指定列
+INSERT INTO 表名 (列1, 列2, ..., 列n) VALUES (值1, 值2, ..., 值n);</div>
+            
+            <h4>示例</h4>
+            <div class="code-example">-- 插入单行数据
+INSERT INTO Students VALUES (1001, '张三', 20, 'M', '计算机系', '2022-09-01');
+
+-- 插入多行数据
+INSERT INTO Students (StudentID, StudentName, Department) VALUES 
+(1002, '李四', '数学系'),
+(1003, '王五', '物理系');</div>
+            
+            <h4>UPDATE - 更新数据</h4>
+            <div class="code-example">UPDATE 表名 SET 列1 = 值1, 列2 = 值2, ... WHERE 条件;</div>
+            
+            <h4>示例</h4>
+            <div class="code-example">-- 更新单个学生的信息
+UPDATE Students SET Age = 21, Department = '信息管理系' WHERE StudentID = 1001;
+
+-- 更新多个学生的信息
+UPDATE Students SET EnrollmentDate = '2022-09-05' WHERE Department = '计算机系';</div>
+            
+            <h4>DELETE - 删除数据</h4>
+            <div class="code-example">DELETE FROM 表名 WHERE 条件;</div>
+            
+            <h4>示例</h4>
+            <div class="code-example">-- 删除指定学生
+DELETE FROM Students WHERE StudentID = 1003;
+
+-- 删除满足条件的所有记录
+DELETE FROM Students WHERE EnrollmentDate < '2022-01-01';</div>
+            
+            <div class="warning">
+                <p><strong>注意：</strong> 如果在DELETE或UPDATE语句中省略WHERE子句，该操作将影响表中的所有记录！</p>
+            </div>
+        </div>
+        
+        <div id="data-query" class="tutorial-content">
+            <h3>数据查询 (SELECT)</h3>
+            <p>SELECT语句是SQL中最常用的命令，用于从一个或多个表中检索数据。</p>
+            
+            <h4>基本语法</h4>
+            <div class="code-example">SELECT 列1, 列2, ... FROM 表名 WHERE 条件;</div>
+            
+            <h4>常用子句</h4>
+            <ul>
+                <li><code>WHERE</code> - 指定检索条件</li>
+                <li><code>ORDER BY</code> - 对结果排序</li>
+                <li><code>GROUP BY</code> - 对数据分组</li>
+                <li><code>HAVING</code> - 对分组结果进行筛选</li>
+                <li><code>LIMIT</code> - 限制返回的行数</li>
+            </ul>
+            
+            <h4>基本查询示例</h4>
+            <div class="code-example">-- 选择所有列
+SELECT * FROM Students;
+
+-- 选择特定列
+SELECT StudentID, StudentName, Department FROM Students;
+
+-- 使用WHERE子句过滤
+SELECT * FROM Students WHERE Age > 20;
+
+-- 使用ORDER BY排序
+SELECT * FROM Students ORDER BY Age DESC, StudentName ASC;</div>
+            
+            <h4>高级查询功能</h4>
+            
+            <h5>聚合函数</h5>
+            <div class="code-example">-- 计算学生平均年龄
+SELECT AVG(Age) AS AverageAge FROM Students;
+
+-- 统计每个系的学生人数
+SELECT Department, COUNT(*) AS StudentCount 
+FROM Students 
+GROUP BY Department;</div>
+            
+            <h5>连接查询</h5>
+            <div class="code-example">-- 内连接
+SELECT s.StudentName, c.CourseName, e.Grade
+FROM Students s
+INNER JOIN Enrollments e ON s.StudentID = e.StudentID
+INNER JOIN Courses c ON e.CourseID = c.CourseID;
+
+-- 左连接
+SELECT s.StudentName, c.CourseName
+FROM Students s
+LEFT JOIN Enrollments e ON s.StudentID = e.StudentID
+LEFT JOIN Courses c ON e.CourseID = c.CourseID;</div>
+            
+            <h5>子查询</h5>
+            <div class="code-example">-- 查找年龄高于平均年龄的学生
+SELECT * FROM Students 
+WHERE Age > (SELECT AVG(Age) FROM Students);
+
+-- 查找至少选修了一门课程的学生
+SELECT * FROM Students
+WHERE StudentID IN (SELECT DISTINCT StudentID FROM Enrollments);</div>
+        </div>
+    </div>
+    
+    <script>
+        /**
+         * 切换显示不同的教程内容
+         * @param {string} id - 要显示的教程内容ID
+         */
+        function showTutorial(id) {
+            // 隐藏所有教程内容
+            document.querySelectorAll('.tutorial-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // 取消所有按钮的活跃状态
+            document.querySelectorAll('.tutorial-nav button').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // 显示选定的教程内容
+            document.getElementById(id).classList.add('active');
+            
+            // 设置对应按钮为活跃状态
+            document.querySelector(`.tutorial-nav button[onclick*="${id}"]`).classList.add('active');
+        }
+    </script>
+    <footer>
+      <p><span>© 2025 SQL 查询实验室V1.0 (所有代码基于SQL LITE数据库环境)</span><span>成都东软学院：余阳</span></p>
+    </footer>
+</body>
+</html>

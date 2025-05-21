@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <script src="page-protector.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据库索引 - 数据库原理与应用</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>数据库索引</h1>
+        <p>理解索引的原理、类型与优化</p>
+    </header>
+
+    <div class="container">
+        <div class="navigation">
+            <a href="index.html">← 返回主页</a>
+        </div>
+
+        <section class="section">
+            <h2>什么是数据库索引？</h2>
+            <p>索引是数据库中一种特殊的数据结构，用于加速数据的检索操作。类似于书籍的目录，索引可以帮助数据库系统快速定位和访问所需的数据，而无需扫描整个表。</p>
+            
+            <div class="interactive-area">
+                <h3>索引的工作原理</h3>
+                <div class="tabs">
+                    <div class="tab active" data-tab="book-analogy">图书类比</div>
+                    <div class="tab" data-tab="technical">技术原理</div>
+                </div>
+                
+                <div class="tab-content active" id="book-analogy">
+                    <div class="visualization" id="book-analogy-viz">
+                        <!-- 图书类比可视化将在这里显示 -->
+                    </div>
+                    <p>想象一本1000页的书：不使用目录时，找到特定主题需要从头翻到尾；使用目录（索引）时，可以直接查找页码，快速定位内容。</p>
+                </div>
+                
+                <div class="tab-content" id="technical">
+                    <div class="visualization" id="index-structure-viz">
+                        <!-- 索引结构可视化将在这里显示 -->
+                    </div>
+                    <p>数据库索引通常以B-树或B+树结构存储，可以实现对数级复杂度的查找操作，大大提高查询效率。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>索引的类型</h2>
+            <div class="index-types">
+                <div class="index-type">
+                    <h3>B-树索引</h3>
+                    <p>最常见的索引类型，适用于等值查询、范围查询和排序操作。每个节点包含多个键值对和指向子节点的指针。</p>
+                </div>
+                
+                <div class="index-type">
+                    <h3>哈希索引</h3>
+                    <p>基于哈希表实现，对等值查询非常高效，但不支持范围查询和排序。将键值通过哈希函数映射到哈希表中的位置。</p>
+                </div>
+                
+                <div class="index-type">
+                    <h3>全文索引</h3>
+                    <p>专为文本搜索设计的索引，支持在文本字段中进行关键词搜索。通常基于倒排索引实现。</p>
+                </div>
+                
+                <div class="index-type">
+                    <h3>空间索引</h3>
+                    <p>用于地理空间数据的索引，支持地理位置相关的查询，如点、线、面的空间关系计算。</p>
+                </div>
+            </div>
+            
+            <div class="interactive-area">
+                <h3>索引类型对比与选择</h3>
+                <div class="visualization">
+                    <canvas id="index-types-comparison"></canvas>
+                </div>
+                
+                <div class="index-selector">
+                    <h4>索引类型选择器</h4>
+                    <p>根据你的查询需求选择合适的索引类型：</p>
+                    <div class="selector-options">
+                        <div class="option">
+                            <label><input type="checkbox" id="option-equality"> 等值查询 (WHERE column = value)</label>
+                        </div>
+                        <div class="option">
+                            <label><input type="checkbox" id="option-range"> 范围查询 (WHERE column BETWEEN x AND y)</label>
+                        </div>
+                        <div class="option">
+                            <label><input type="checkbox" id="option-sorting"> 排序操作 (ORDER BY column)</label>
+                        </div>
+                        <div class="option">
+                            <label><input type="checkbox" id="option-text"> 文本搜索 (LIKE '%keyword%')</label>
+                        </div>
+                        <div class="option">
+                            <label><input type="checkbox" id="option-spatial"> 地理位置查询</label>
+                        </div>
+                    </div>
+                    <button id="find-index-type">推荐索引类型</button>
+                    <div id="index-recommendation"></div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2>创建与管理索引</h2>
+            <p>索引的创建、修改和删除是数据库管理的重要部分。正确创建索引可以显著提升性能，但过多或不当的索引会增加存储开销和降低写入性能。</p>
+            
+            <div class="code-examples">
+                <div class="code-example">
+                    <h3>创建索引</h3>
+                    <pre>-- 创建单列索引
+CREATE INDEX idx_customers_name ON customers(name);
+
+-- 创建复合索引
+CREATE INDEX idx_orders_customer_date ON orders(customer_id, order_date);
+
+-- 创建唯一索引
+CREATE UNIQUE INDEX idx_users_email ON users(email);</pre>
+                </div>
+                
+                <div class="code-example">
+                    <h3>删除索引</h3>
+                    <pre>-- 删除索引
+DROP INDEX idx_customers_name ON customers;</pre>
+                </div>
+            </div>
+            
+            <div class="interactive-area">
+                <h3>索引创建与查询性能模拟</h3>
+                <div class="simulation-controls">
+                    <div class="control-group">
+                        <label>表大小:</label>
+                        <select id="table-size">
+                            <option value="1000">1,000 行</option>
+                            <option value="10000" selected>10,000 行</option>
+                            <option value="100000">100,000 行</option>
+                            <option value="1000000">1,000,000 行</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>索引状态:</label>
+                        <select id="index-status">
+                            <option value="none">无索引</option>
+                            <option value="single">单列索引</option>
+                            <option value="composite">复合索引</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>查询类型:</label>
+                        <select id="query-type">
+                            <option value="equality">等值查询</option>
+                            <option value="range">范围查询</option>
+                            <option value="join">联表查询</option>
+                        </select>
+                    </div>
+                    <button id="run-simulation">运行模拟</button>
+                </div>
+                
+                <div class="visualization" id="performance-viz">
+                    <!-- 性能比较图表将在这里显示 -->
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>B树与B+树可视化</h2>
+            <div class="interactive-area">
+                <div class="tabs">
+                    <div class="tab active" data-tab="btree">B树结构</div>
+                    <div class="tab" data-tab="bplustree">B+树结构</div>
+                    <div class="tab" data-tab="comparison">结构对比</div>
+                </div>
+                
+                <div class="tab-content active" id="btree">
+                    <div class="visualization" id="btree-viz"></div>
+                    <p>B树是一种自平衡的搜索树，所有节点都可以存储数据，每个节点包含键和指向子节点的指针。</p>
+                    <div class="btree-controls">
+                        <input type="number" id="btree-insert-value" placeholder="输入值">
+                        <button id="btree-insert">插入值</button>
+                        <button id="btree-search">查找值</button>
+                        <button id="btree-reset">重置</button>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="bplustree">
+                    <div class="visualization" id="bplustree-viz"></div>
+                    <p>B+树是B树的变种，只有叶子节点存储数据，叶子节点通过链表相连，有利于范围查询。</p>
+                    <div class="bplustree-controls">
+                        <input type="number" id="bplustree-insert-value" placeholder="输入值">
+                        <button id="bplustree-insert">插入值</button>
+                        <button id="bplustree-search">查找值</button>
+                        <button id="bplustree-reset">重置</button>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="comparison">
+                    <div class="visualization" id="tree-comparison-viz"></div>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>特性</th>
+                                <th>B树</th>
+                                <th>B+树</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>数据存储位置</td>
+                                <td>所有节点</td>
+                                <td>仅叶子节点</td>
+                            </tr>
+                            <tr>
+                                <td>范围查询效率</td>
+                                <td>一般</td>
+                                <td>高（叶子节点相连）</td>
+                            </tr>
+                            <tr>
+                                <td>树高度</td>
+                                <td>相对较低</td>
+                                <td>可能较高</td>
+                            </tr>
+                            <tr>
+                                <td>常见应用</td>
+                                <td>文件系统</td>
+                                <td>关系型数据库</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>索引优化策略</h2>
+            <p>合理的索引设计对数据库性能至关重要。以下是一些关键的索引优化策略：</p>
+            
+            <div class="optimization-tips">
+                <div class="tip">
+                    <h3>1. 选择合适的列</h3>
+                    <p>为高选择性（不重复值多）、常用于WHERE和JOIN条件的列创建索引。</p>
+                </div>
+                
+                <div class="tip">
+                    <h3>2. 复合索引的列顺序</h3>
+                    <p>将选择性高的列放在前面，考虑最常见的查询模式。</p>
+                </div>
+                
+                <div class="tip">
+                    <h3>3. 避免过度索引</h3>
+                    <p>索引会占用存储空间并降低写入性能，删除不常用的索引。</p>
+                </div>
+                
+                <div class="tip">
+                    <h3>4. 定期重建索引</h3>
+                    <p>长期使用后索引可能变得碎片化，定期重建可提高性能。</p>
+                </div>
+                
+                <div class="tip">
+                    <h3>5. 利用覆盖索引</h3>
+                    <p>创建包含所有查询所需列的索引，可以直接从索引获取数据而不需要访问表。</p>
+                </div>
+            </div>
+            
+            <div class="interactive-area">
+                <h3>索引使用场景评估</h3>
+                <div class="scenario-evaluation">
+                    <div class="scenario">
+                        <h4>场景1: 用户登录检查</h4>
+                        <pre>SELECT * FROM users WHERE username = ? AND password = ?</pre>
+                        <div class="evaluation-options">
+                            <p>最佳索引方案是：</p>
+                            <div class="options">
+                                <label><input type="radio" name="scenario1" value="a"> 在username上创建单列索引</label>
+                                <label><input type="radio" name="scenario1" value="b"> 在password上创建单列索引</label>
+                                <label><input type="radio" name="scenario1" value="c"> 在(username, password)上创建复合索引</label>
+                                <label><input type="radio" name="scenario1" value="d"> 不需要索引</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="scenario">
+                        <h4>场景2: 订单查询</h4>
+                        <pre>SELECT * FROM orders WHERE customer_id = ? ORDER BY order_date DESC LIMIT 10</pre>
+                        <div class="evaluation-options">
+                            <p>最佳索引方案是：</p>
+                            <div class="options">
+                                <label><input type="radio" name="scenario2" value="a"> 在customer_id上创建单列索引</label>
+                                <label><input type="radio" name="scenario2" value="b"> 在order_date上创建单列索引</label>
+                                <label><input type="radio" name="scenario2" value="c"> 在(customer_id, order_date)上创建复合索引</label>
+                                <label><input type="radio" name="scenario2" value="d"> 在(order_date, customer_id)上创建复合索引</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button id="check-scenarios">检查答案</button>
+                    <div id="scenario-results"></div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2>索引与查询执行计划</h2>
+            <p>了解数据库如何使用索引对查询进行优化是提高性能的关键。执行计划显示了数据库引擎如何处理查询以及是否使用了索引。</p>
+            
+            <div class="interactive-area">
+                <h3>查询执行计划分析</h3>
+                <div class="query-plan-demo">
+                    <div class="query-input">
+                        <textarea id="query-input" rows="4" placeholder="输入SQL查询..."></textarea>
+                        <div class="index-options">
+                            <h4>可用索引</h4>
+                            <div class="index-option">
+                                <label><input type="checkbox" id="idx-customer-id" checked> idx_customer_id</label>
+                            </div>
+                            <div class="index-option">
+                                <label><input type="checkbox" id="idx-order-date"> idx_order_date</label>
+                            </div>
+                            <div class="index-option">
+                                <label><input type="checkbox" id="idx-customer-date"> idx_customer_id_order_date</label>
+                            </div>
+                        </div>
+                        <button id="analyze-query">分析查询</button>
+                    </div>
+                    
+                    <div class="execution-plan-viz" id="execution-plan">
+                        <!-- 执行计划可视化将在这里显示 -->
+                    </div>
+                    
+                    <div class="plan-explanation" id="plan-explanation">
+                        <!-- 计划解释将在这里显示 -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>数据库原理与应用课程 | 索引学习模块</p>
+    </footer>
+
+    <script src="js/indexes.js"></script>
+</body>
+</html> 

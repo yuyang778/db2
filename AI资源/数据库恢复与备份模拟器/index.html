@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <script src="page-protector.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL SERVER数据库恢复与备份模拟器</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- 使用最新版本的Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // 调试Chart.js是否正确加载
+        window.addEventListener('load', function() {
+            console.log('页面加载完成');
+            console.log('Chart对象是否存在:', typeof Chart !== 'undefined');
+            console.log('Canvas元素是否存在:', document.getElementById('timelineChart') !== null);
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>SQL SERVER数据库恢复与备份模拟器</h1>
+        
+        <div class="dashboard">
+            <div class="control-panel">
+                <h2>控制面板</h2>
+                <div class="controls">
+                    <div class="backup-section">
+                        <h3>备份操作</h3>
+                        <button id="fullBackup">完整备份</button>
+                        <button id="diffBackup">差异备份</button>
+                        <button id="logBackup">日志备份</button>
+                    </div>
+                    <div class="database-actions">
+                        <h3>数据库操作</h3>
+                        <button id="addData">添加数据</button>
+                        <button id="modifyData">修改数据</button>
+                        <button id="simulateCrash">模拟崩溃</button>
+                    </div>
+                    <div class="restore-section">
+                        <h3>恢复操作</h3>
+                        <button id="restoreFromFull">从完整备份恢复</button>
+                        <button id="restoreWithDiff">使用差异备份恢复</button>
+                        <button id="restoreWithLogs">使用日志恢复</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="visualization">
+                <h2>可视化面板</h2>
+                <div class="database-state">
+                    <h3>当前数据库状态</h3>
+                    <div id="databaseContent" class="database-content"></div>
+                </div>
+                <div class="timeline">
+                    <h3>操作时间线</h3>
+                    <div id="timelineContent" class="timeline-content"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <h2>操作时间线图表</h2>
+            <div style="position: relative; height: 300px; width: 100%;">
+                <canvas id="timelineChart"></canvas>
+            </div>
+            <div id="chartStatus" style="color: #666; font-style: italic; margin-top: 10px; text-align: center;"></div>
+        </div>
+        
+        <div class="logs-panel">
+            <h2>日志文件</h2>
+            <div id="logsContent" class="logs-content"></div>
+        </div>
+        
+        <div class="info-panel">
+            <h2>操作信息</h2>
+            <div id="infoContent" class="info-content"></div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html> 

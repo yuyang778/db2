@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <script src="page-protector.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Server数据库安全与权限管理工具</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>SQL Server数据库安全与权限管理工具</h1>
+        </header>
+        
+        <div class="main-content">
+            <div class="panel users-panel">
+                <h2>用户管理</h2>
+                <div class="user-list">
+                    <div class="user selected" data-user="sa">
+                        <span class="user-icon">👤</span>
+                        <span class="user-name">系统管理员 (sa)</span>
+                    </div>
+                    <div class="user" data-user="dbadmin">
+                        <span class="user-icon">👤</span>
+                        <span class="user-name">数据库管理员</span>
+                    </div>
+                    <div class="user" data-user="developer">
+                        <span class="user-icon">👤</span>
+                        <span class="user-name">开发人员</span>
+                    </div>
+                    <div class="user" data-user="reporter">
+                        <span class="user-icon">👤</span>
+                        <span class="user-name">报表用户</span>
+                    </div>
+                    <div class="user" data-user="guest">
+                        <span class="user-icon">👤</span>
+                        <span class="user-name">访客</span>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button id="add-user-btn">添加用户</button>
+                </div>
+            </div>
+            
+            <div class="panel permissions-panel">
+                <h2>权限管理</h2>
+                <div class="user-info">
+                    <h3 id="selected-user-display">系统管理员 (sa)</h3>
+                    <div class="role-container">
+                        <span>角色:</span>
+                        <span id="user-roles">sysadmin</span>
+                        <button id="edit-role-btn">编辑角色</button>
+                    </div>
+                </div>
+                
+                <div class="permission-tables">
+                    <div class="permission-section">
+                        <h3>服务器权限</h3>
+                        <table class="permission-table">
+                            <thead>
+                                <tr>
+                                    <th>权限</th>
+                                    <th>授予</th>
+                                    <th>拒绝</th>
+                                </tr>
+                            </thead>
+                            <tbody id="server-permissions">
+                                <!-- 服务器权限将由JavaScript动态生成 -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="permission-section">
+                        <h3>数据库权限</h3>
+                        <div class="db-selector">
+                            <label for="database-select">选择数据库:</label>
+                            <select id="database-select">
+                                <option value="master">master</option>
+                                <option value="model">model</option>
+                                <option value="msdb">msdb</option>
+                                <option value="tempdb">tempdb</option>
+                                <option value="userdb">用户数据库</option>
+                            </select>
+                        </div>
+                        <table class="permission-table">
+                            <thead>
+                                <tr>
+                                    <th>权限</th>
+                                    <th>授予</th>
+                                    <th>拒绝</th>
+                                </tr>
+                            </thead>
+                            <tbody id="db-permissions">
+                                <!-- 数据库权限将由JavaScript动态生成 -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="permission-section">
+                        <h3>对象权限</h3>
+                        <div class="object-selector">
+                            <label>数据库对象:</label>
+                            <select id="object-type-select">
+                                <option value="tables">表</option>
+                                <option value="views">视图</option>
+                                <option value="procedures">存储过程</option>
+                                <option value="functions">函数</option>
+                            </select>
+                            <select id="object-select">
+                                <option value="table1">客户表</option>
+                                <option value="table2">订单表</option>
+                                <option value="table3">产品表</option>
+                            </select>
+                        </div>
+                        <table class="permission-table">
+                            <thead>
+                                <tr>
+                                    <th>权限</th>
+                                    <th>授予</th>
+                                    <th>拒绝</th>
+                                </tr>
+                            </thead>
+                            <tbody id="object-permissions">
+                                <!-- 对象权限将由JavaScript动态生成 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button id="save-permissions-btn">保存权限</button>
+                    <button id="reset-permissions-btn">重置权限</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel log-panel">
+            <h2>操作日志</h2>
+            <div id="log-container">
+                <div class="log-entry">系统启动 - 权限管理工具已初始化</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2 id="modal-title">添加用户</h2>
+            <div id="modal-body">
+                <!-- 模态框内容将由JavaScript动态生成 -->
+            </div>
+            <div class="modal-buttons">
+                <button id="modal-confirm-btn">确定</button>
+                <button id="modal-cancel-btn">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
